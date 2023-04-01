@@ -17,7 +17,6 @@ const allLinksSchema = mongoose.Schema({
     shortURL: String,
     remarks: String,
     clicks: Number,
-    domain:String,
     userID:String
 })
 
