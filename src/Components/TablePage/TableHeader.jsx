@@ -28,12 +28,12 @@ const TableHeader = ({ sort }) => {
                 console.log(selected)
                 setSelectAll(value)
             }}>Checkbox</Box>
-            <Box display={"flex"} justifyContent={"center"} alignItems={"center"} flexShrink={0} w={"23%"} cursor={"pointer"} borderRadius={"none"} bg={"cyan"} h={"40px"} border={"1px solid #dee2e6"} fontSize={"12px"} fontWeight={"900"}>Long URL</Box>
-            <Box display={"flex"} justifyContent={"center"} alignItems={"center"} flexShrink={0} w={"10%"} cursor={"pointer"} borderRadius={"none"} bg={"cyan"} h={"40px"} border={"1px solid #dee2e6"} fontSize={"12px"} fontWeight={"900"} onClick={() => sort("customerName")}>Alias</Box>
-            <Box display={"flex"} justifyContent={"center"} alignItems={"center"} flexShrink={0} w={"18%"} cursor={"pointer"} borderRadius={"none"} bg={"cyan"} h={"40px"}  border={"1px solid #dee2e6"} fontSize={"12px"} fontWeight={"900"} onClick={() => sort("salesPerson")}>Short URL</Box>
-            <Box display={"flex"} justifyContent={"center"} alignItems={"center"} flexShrink={0} w={"15%"} cursor={"pointer"} borderRadius={"none"} bg={"cyan"} h={"40px"}  border={"1px solid #dee2e6"} fontSize={"12px"} fontWeight={"900"} onClick={() => sort("course")}>Remarks</Box>
-            <Box display={"flex"} justifyContent={"center"} alignItems={"center"} flexShrink={0} w={"5%"} cursor={"pointer"} borderRadius={"none"} bg={"cyan"} h={"40px"}  border={"1px solid #dee2e6"} fontSize={"12px"} fontWeight={"900"} onClick={() => sort("coursePrice")}>Clicks</Box>
-            <Box display={"flex"} justifyContent={"center"} alignItems={"center"} flexShrink={0} w={"23%"} cursor={"pointer"} borderRadius={"none"} bg={"cyan"} h={"40px"}  border={"1px solid #dee2e6"} fontSize={"12px"} fontWeight={"900"} onClick={() => sort("customerEmail")}>Other Options</Box>
+            <Box display={"flex"} justifyContent={"center"} alignItems={"center"} flexShrink={0} w={"23%"} cursor={"pointer"} borderRadius={"none"} bg={"cyan"} h={"40px"} border={"1px solid #dee2e6"} fontSize={"12px"} fontWeight={"900"} onClick={() => sort("longURL")}>Long URL</Box>
+            <Box display={"flex"} justifyContent={"center"} alignItems={"center"} flexShrink={0} w={"10%"} cursor={"pointer"} borderRadius={"none"} bg={"cyan"} h={"40px"} border={"1px solid #dee2e6"} fontSize={"12px"} fontWeight={"900"} onClick={() => sort("alias")}>Alias</Box>
+            <Box display={"flex"} justifyContent={"center"} alignItems={"center"} flexShrink={0} w={"18%"} cursor={"pointer"} borderRadius={"none"} bg={"cyan"} h={"40px"}  border={"1px solid #dee2e6"} fontSize={"12px"} fontWeight={"900"} onClick={() => sort("shortURL")}>Short URL</Box>
+            <Box display={"flex"} justifyContent={"center"} alignItems={"center"} flexShrink={0} w={"15%"} cursor={"pointer"} borderRadius={"none"} bg={"cyan"} h={"40px"}  border={"1px solid #dee2e6"} fontSize={"12px"} fontWeight={"900"} onClick={() => sort("remarks")}>Remarks</Box>
+            <Box display={"flex"} justifyContent={"center"} alignItems={"center"} flexShrink={0} w={"5%"} cursor={"pointer"} borderRadius={"none"} bg={"cyan"} h={"40px"}  border={"1px solid #dee2e6"} fontSize={"12px"} fontWeight={"900"} onClick={() => sort("clicks")}>Clicks</Box>
+            <Box display={"flex"} justifyContent={"center"} alignItems={"center"} flexShrink={0} w={"23%"} cursor={"pointer"} borderRadius={"none"} bg={"cyan"} h={"40px"}  border={"1px solid #dee2e6"} fontSize={"12px"} fontWeight={"900"} >Other Options</Box>
         </Box>
     )
 }

@@ -6,7 +6,7 @@ import { CopyIcon } from "@chakra-ui/icons";
 
 export default function TableRows({ data, userDataArr, setData, toast
 }) {
-    const { selected, setSelected, editing, domainValue, userDetails } = useContext(Context);
+    const { selected, setSelected, editing, domainValue, userDetails,setFilteredData } = useContext(Context);
     const [check, setCheck] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(true);
     const {clicks, longURL, alias, remarks, shortURL, _id } = data;
@@ -14,8 +14,11 @@ export default function TableRows({ data, userDataArr, setData, toast
     const [aliasValue, setAliasValue] = useState(alias)
     const [remarksValue, setRemarksValue] = useState(remarks)
     const [shortLinkValue, setShortLinkValue] = useState(shortURL)
-
+    const [count, setCount] = useState(1);
     useEffect(() => {
+        if (count == 1) {
+            return setCount(prev => prev + 1)
+        }
         let editedObject = {
             longURL: longURLValue,
             alias: aliasValue,
@@ -34,8 +37,8 @@ export default function TableRows({ data, userDataArr, setData, toast
             }
         }
         setData(temp)
+        setFilteredData(temp);
     }, [longURLValue, aliasValue, remarksValue, shortLinkValue])
-
     return (
         <Box display={"flex"} minW={"100%"} background={check ? "lightgreen" : "none"}>
             <Box flexShrink={0} overflow={"hidden"} borderRadius={"none"} h={"40px"} type={"checkbox"} w={"6%"} border={"1px solid #dee2e6"} textAlign={"center"} >

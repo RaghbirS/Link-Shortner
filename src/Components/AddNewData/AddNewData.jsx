@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Navigate } from 'react-router-dom';
 import { uid } from 'uid';
 import { Context } from '../../context';
 
@@ -19,16 +19,26 @@ export default function AddNewData() {
   const [alias, setAlias] = useState("")
   const [remarks, setRemarks] = useState("")
   const [shortLink, setShortLink] = useState("")
-  const { data, setData, userDetails, setNewDataAdded, filteredData, setFilteredData,domainValue,toast } = useContext(Context);
+  const { data, setData,newDataAdded, userDetails, setNewDataAdded, filteredData, setFilteredData, domainValue, toast } = useContext(Context);
 
-  function handleSubmit() {
-    if(longURL.length==0 || alias.length==0){
+  async function handleSubmit() {
+    if (longURL.length == 0 || alias.length == 0) {
       return toast({
         title: `Long URL and Alias is required`,
         status: "error",
         isClosable: true,
         position: "top"
-    })
+      })
+    }
+    for (let i of data) {
+      if (i.shortURL == shortLink) {
+        return toast({
+          title: `The alias is already being used on the same domain`,
+          status: "error",
+          isClosable: true,
+          position: "top"
+        })
+      }
     }
     let obj = {
       longURL: longURL,
@@ -48,16 +58,17 @@ export default function AddNewData() {
       setNewDataAdded(prev => !prev);
     }, 200);
   }
-  useEffect(()=>{
-    if(!domainValue){
+  useEffect(() => {
+    if (!domainValue) {
       setShortLink(`http://localhost:3001/${alias}`)
     }
-    else{
+    else {
       setShortLink(`http://${domainValue}.in/${alias}`)
     }
-    if( longURL=="" || longURL=="http:/" || longURL=="http:" || 
-    longURL=="http" || longURL=="htt" || longURL=="ht" || longURL=="h" || longURL=="h") setLongURL("http://")
+    if (longURL == "" || longURL == "http:/" || longURL == "http:" ||
+      longURL == "http" || longURL == "htt" || longURL == "ht" || longURL == "h" || longURL == "h") setLongURL("http://")
   })
+  if(newDataAdded) return <Navigate to={"/"}/>
   return (
     <Flex
       minH={'80vh'}
@@ -96,7 +107,6 @@ export default function AddNewData() {
                 align={'start'}
                 justify={'space-between'}>
               </Stack>
-              <NavLink to={"/"}>
                 <Button
                   onClick={handleSubmit}
                   bg={'blue.400'}
@@ -106,7 +116,6 @@ export default function AddNewData() {
                   }}>
                   Submit
                 </Button>
-              </NavLink>
             </Stack>
           </Stack>
         </Box>

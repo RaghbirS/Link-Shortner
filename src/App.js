@@ -17,7 +17,6 @@ function App() {
     if (!isLogin) return
     
     axios.get(`http://localhost:3001/shorten/AllData?userID=${userDetails._id}`).then(res => {
-      console.log(res.data)
       setData(res.data)
       setFilteredData(res.data)
     })
@@ -62,6 +61,9 @@ function App() {
       }, 200);
     }
   }, [newDataAdded]);
+  useEffect(() => {
+    console.log(data)
+  }, [data]);
 
   return (
     <div className="App">
