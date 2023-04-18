@@ -87,7 +87,7 @@ app.get("/:alias", async (req, res) => {
         const data = await AllLinksModel.find();
         let longURL = "";
         // const domain = `${url.parse(req.protocol + '://' + req.get('host')).hostname}`;
-        const domain = `http://${req.get("Host")}/${alias}`;
+        const domain = `https://${req.get("Host")}/${alias}`;
         console.log(domain)
         let geo = geoip.lookup(req.clientIp);
         let info = platform.parse(req.headers["user-agent"]);
