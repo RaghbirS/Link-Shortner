@@ -8,7 +8,8 @@ const userSchema = mongoose.Schema({
     lastName: String,
     email: String,
     password: String,
-    domain:String
+    domain:String,
+    isAdmin:Boolean
 })
 
 const allLinksSchema = mongoose.Schema({
@@ -17,14 +18,29 @@ const allLinksSchema = mongoose.Schema({
     shortURL: String,
     remarks: String,
     clicks: Number,
-    userID:String
+    userID:String,
+    favourite:Boolean,
+    dateCreated:Object
+})
+
+const clickDataSchema = mongoose.Schema({
+    city: String,
+    country: String,
+    latitude: String,
+    longitude: String,
+    browser: String,
+    os:String,
+    userID:String,
+    shortURL:String
 })
 
 const UserModel = mongoose.model("user", userSchema);
 const AllLinksModel = mongoose.model("AllLinks", allLinksSchema);
+const ClickDataModel = mongoose.model("clicks", clickDataSchema);
 
 module.exports = {
     connection,
     UserModel,
-    AllLinksModel
+    AllLinksModel,
+    ClickDataModel
 }

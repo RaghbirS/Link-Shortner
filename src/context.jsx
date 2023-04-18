@@ -1,15 +1,18 @@
 import { useToast } from "@chakra-ui/react";
 import { createContext, useState } from "react";
+import Cookies from 'js-cookie';
 
 
 export let Context = createContext();
 
 export default function ContextProvider({ children }) {
+    let user = Cookies.get('user');
+    if(user) user = JSON.parse(user)
+    else user = {}
     let [data, setData] = useState([]);
     let [filteredData, setFilteredData] = useState([]);
     let [selected, setSelected] = useState([]);
-    let [isLogin, setIsLogin] = useState(localStorage.getItem("linkShortnerLoginStatus") || false);
-    const [userDetails, setUserDetails] = useState(JSON.parse(localStorage.getItem("linkShortnerUserData")) || {});
+    const [userDetails, setUserDetails] = useState(user);
     let [salesPersonOptions, setSalesPersonOptions] = useState([]);
     let [courseOptions, setCourseOptions] = useState([]);
     let [customerNameOptions, setCustomerNameOptions] = useState([]);
@@ -17,6 +20,12 @@ export default function ContextProvider({ children }) {
     const [editing, setEditing] = useState(false);
     const [newDataAdded, setNewDataAdded] = useState(false);
     const [domainValue,setDomainValue] = useState("");
+    const [clickDetails, setclickDetails] = useState([]);
+    const [mapData,setMapData] = useState([]);
+    const [shortLimit,setShortLimit] = useState(0);
+    const [isAdminLogin,setisAdminLogin] = useState(false);
+    const [allUsersData,setAllUsersData] = useState([])
+    const [allUsersFilteredData,setAllUsersFilteredData] = useState([])
     const toast = useToast()
     return (
         <Context.Provider
@@ -25,7 +34,7 @@ export default function ContextProvider({ children }) {
                 filteredData, setFilteredData,
                 selected, setSelected,
                 userDetails, setUserDetails,
-                isLogin, setIsLogin,
+                mapData,setMapData,
                 salesPersonOptions, setSalesPersonOptions,
                 courseOptions, setCourseOptions,
                 customerNameOptions, setCustomerNameOptions,
@@ -33,7 +42,12 @@ export default function ContextProvider({ children }) {
                 editing, setEditing,
                 newDataAdded, setNewDataAdded,
                 toast,
-                domainValue,setDomainValue
+                domainValue,setDomainValue,
+                clickDetails, setclickDetails,
+                shortLimit,setShortLimit,
+                isAdminLogin,setisAdminLogin,
+                allUsersData,setAllUsersData,
+                allUsersFilteredData,setAllUsersFilteredData
             }}>
             {children}
         </Context.Provider>

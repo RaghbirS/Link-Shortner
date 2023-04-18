@@ -8,24 +8,38 @@ import NavBar from "./Components/Nav/Nav";
 import RegisterPage from "./Components/RegisterPage/RegisterPage";
 import TablePage from "./Components/TablePage/TablePage";
 import { Context } from "./context";
-
+import { io } from "socket.io-client";
+import Map from "./Components/TablePage/GoogleMap";
+import ForgotPassword from "./Components/forgotPassword/forgotPassword";
+import AdminLogin from "./Components/AdminLogin/AdminLogin";
+import AdminPage from "./Components/AdminPage/AdminTablePage";
+import HomePage from "./Components/HomePage/HomePage";
 function App() {
-  const { data,setData, isLogin, userDetails, setFilteredData, toast, newDataAdded } = useContext(Context);
-
+  const { data, setData, isLogin, userDetails, setFilteredData, toast, newDataAdded, filteredData, clickDetails, setShortLimit, setclickDetails, isAdminLogin, setisAdminLogin } = useContext(Context);
   const [count, setCount] = useState(1);
   useEffect(() => {
-    if (!isLogin) return
-    
+    if (!userDetails._id) return
+    (async () => {
+      let response = await axios.get("http://localhost:3001/shorten/licenceCheck", {
+        email: userDetails.email
+      });
+      response = response.data;
+      setShortLimit(response.limit)
+    })()
     axios.get(`http://localhost:3001/shorten/AllData?userID=${userDetails._id}`).then(res => {
-      setData(res.data)
-      setFilteredData(res.data)
+      let sortedTempData = res.data.sort((a, b) => Number(b.favourite) - Number(a.favourite))
+      setData(sortedTempData)
+      setFilteredData(sortedTempData)
     })
-  }, [isLogin])
+    axios.get(`http://localhost:3001/shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
+      setclickDetails(data)
+    })
+  }, [userDetails._id])
   useEffect(() => {
     if (count == 1) {
       return setCount(prev => prev + 1)
     }
-    if (isLogin) {
+    if (userDetails._id) {
       setTimeout(() => {
         toast({
           title: `Login Successful`,
@@ -43,7 +57,7 @@ function App() {
         position: "top",
       })
     }
-  }, [isLogin]);
+  }, [userDetails._id]);
 
 
   useEffect(() => {
@@ -61,20 +75,48 @@ function App() {
       }, 200);
     }
   }, [newDataAdded]);
+
   useEffect(() => {
-    console.log(data)
-  }, [data]);
+    if (!userDetails._id) return;
+    const socket = io('http://localhost:3001');
+    console.log("render")
+    socket.on("newClick", res => {
+      let tempData = [...data];
+      let tempFilteredData = [...filteredData];
+      for (let i = 0; i < tempData.length; i++) {
+        if (tempData[i].shortURL == res.result.shortURL) {
+          tempData[i].clicks = res.obj.clicks;
+          setData(tempData);
+          break
+        }
+      }
+      for (let i = 0; i < tempFilteredData.length; i++) {
+        if (tempFilteredData[i].shortURL == res.result.shortURL) {
+          tempFilteredData[i].clicks = res.obj.clicks;
+          setFilteredData(tempData);
+          break
+        }
+      }
+      setclickDetails(prev => [...prev, res.result])
+    })
+    return () => socket.disconnect()
+  }, [userDetails._id])
 
   return (
     <div className="App">
-      <ChakraProvider>
-        <NavBar />
-      </ChakraProvider>
+
+      <NavBar />
+
       <Routes>
-        <Route path="/" element={<TablePage />} />
-        <Route path="/addNewData" element={<ChakraProvider> <AddNewData /></ChakraProvider>} />
-        <Route path="/login" element={<ChakraProvider> <LoginPage /></ChakraProvider>} />
-        <Route path="/register" element={<ChakraProvider><RegisterPage /></ChakraProvider>} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/links" element={<TablePage />} />
+        <Route path="/map" element={<Map />} />
+        <Route path="/addNewData" element={<AddNewData />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/adminLogin" element={<AdminLogin />} />
+        <Route path="/adminPage" element={<AdminPage />} />
+        <Route path="/forgotPassword" element={<ForgotPassword />} />
+        <Route path="/register" element={<RegisterPage />} />
       </Routes>
     </div>
   );

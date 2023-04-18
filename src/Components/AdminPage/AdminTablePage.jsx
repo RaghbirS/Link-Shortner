@@ -1,95 +1,44 @@
-import { Box, Button, Text, useEditable } from "@chakra-ui/react";
+import { Box, Button, Text, filter, useEditable } from "@chakra-ui/react";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { Navigate, NavLink } from "react-router-dom";
 import { Context } from "../../context";
-import TableHeader from "./TableHeader";
-import TableRows from "./TableRows";
+import TableHeader from "./AdminTableHeader";
+import TableRows from "./AdminTableRows";
 import { ChakraProvider } from "@chakra-ui/react";
 import BasicUsage from "./Modal";
 import { Input } from "@chakra-ui/react";
-import Filters from "./Filters";
+import Filters from "./AdminFilters";
 import { EditIcon } from "@chakra-ui/icons";
 
 export default function TablePage() {
-    const { data, setData, isLogin, userDetails, selected, setSelected, filteredData, setFilteredData, editing, setEditing, toast
+    const { allUsersData, setAllUsersData, isLogin, userDetails, selected, setSelected, allUsersFilteredData, setAllUsersFilteredData, editing, setEditing, toast
         , domainValue, setDomainValue, clickDetails,
-        shortLimit, setShortLimit
+        shortLimit, setShortLimit, isAdminLogin
     } = useContext(Context);
     const [isEditable, setIsEditable] = useState(false);
     const [domain, setDomain] = useState(domainValue);
-    function sortAsc(param) {
-        const temp = [...data]
-        const sortedData = [...temp].sort((a, b) => {
-            if (a[param] > b[param]) {
-                return -1;
-            }
-            if (a[param] < b[param]) {
-                return 1;
-            }
-            return 0;
-        });
-        setFilteredData(sortedData);
-    }
-    function sortDes(param) {
-        const temp = [...data]
-        const sortedData = [...temp].sort((a, b) => {
-            if (a[param] > b[param]) {
-                return 1;
-            }
-            if (a[param] < b[param]) {
-                return -1;
-            }
-            return 0;
-        });
-        setFilteredData(sortedData);
-    }
-    function sortAscDate(param) {
-        const temp = [...data]
-        const sortedData = [...temp].sort((a, b) => {
-            if (new Date(a[param]) > new Date(b[param])) {
-                return -1;
-            }
-            if (new Date(a[param]) < new Date(b[param])) {
-                return 1;
-            }
-            return 0;
-        });
-        setFilteredData(sortedData);
-    }
-    function sortDesDate(param) {
-        const temp = [...data]
-        const sortedData = [...temp].sort((a, b) => {
-            if (new Date(a[param]) > new Date(b[param])) {
-                return 1;
-            }
-            if (new Date(a[param]) < new Date(b[param])) {
-                return -1;
-            }
-            return 0;
-        });
-        setFilteredData(sortedData);
-    }
+
     useEffect(() => {
-        axios.get(`http://localhost:3001/shorten/users/${userDetails._id}`).then(res => {
-            setDomainValue(res.data.domain);
-            setDomain(res.data.domain)
+        axios.get(`http://localhost:3001/shorten/users`).then(res => {
+            setAllUsersData(res.data);
+            setAllUsersFilteredData(res.data)
         })
     }, [])
-    if (!userDetails._id) return <Navigate to={"/login"} />
+    if (!isAdminLogin) return <Navigate to={"/login"} />
     return (
         <Box display={"flex"} flexDirection={"column"}>
-            <Box w={"100%"} minH={"150px"} display={"flex"} flexDir={"column"} p={"0 30px"}>
+            <Box w={"100%"} h={"150px"} display={"flex"} flexDir={"column"} p={"0 30px"}>
                 <ChakraProvider>
 
                     <Box display={"flex"} alignItems={"center"} h={"50%"} p={"30px 0"} width={"100%"} justifyContent={"space-between"}>
                         <Box display={"flex"} gap={"20px"}>
-                            <NavLink to={"/addNewData"}>
+                            {/* <NavLink to={"/addNewData"}>
                                 <Button _hover={{ background: "#6262ff" }} color={"white"} background={"#7f7fff"} cursor={"pointer"} display={"flex"} gap={"10px"} alignItems="center" fontWeight={"500"}>
                                     <svg style={{ width: "15px", fill: "white" }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M240 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H176V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H240V80z" /></svg>
                                     <Text>Add New URL</Text>
                                 </Button>
-                            </NavLink>
+                            </NavLink> */}
                             <Button disabled={selected.length === 0} _hover={{ background: "#00af00" }} color={"white"} background={"green"} display={editing ? "none" : "flex"} onClick={() => {
                                 if (selected.length === 0) {
                                     return toast({
@@ -116,20 +65,16 @@ export default function TablePage() {
                                 }
                                 for (let i of selected) {
                                     let temp = {};
-                                    for (let j of data) {
+                                    for (let j of allUsersData) {
                                         if (j._id == i._id) {
                                             temp = j;
                                             break
                                         }
                                     }
-                                    await axios.patch(`http://localhost:3001/shorten/AllData/${i._id}`, temp)
+                                    console.log(temp)
+                                    await axios.patch(`http://localhost:3001/shorten/users/${i._id}`, temp)
                                     i.setCheck(false)
                                     i.setIsReadOnly(true)
-                                }
-                                for (let i of clickDetails) {
-                                    await axios.patch(`http://localhost:3001/shorten/clicks/${i._id}`, {
-                                        shortURL: i.shortURL
-                                    })
                                 }
                                 setSelected([])
                                 toast({
@@ -169,25 +114,22 @@ export default function TablePage() {
                                     }
                                     return true
                                 }} onClick={async () => {
-
+                                    let filterData = [...allUsersData]
                                     for (let i of selected) {
-                                        console.log(selected)
-                                        await axios.delete(`http://localhost:3001/shorten/AllData/${i._id}`);
-
-                                    }
-                                    let filterData = [...data];
-                                    for (let i of selected) {
-                                        filterData = filterData.filter(e => e._id != i._id)
-                                    }
-                                    for (let i of selected) {
-                                        let temp = clickDetails.filter(element => element.shortURL == i.shortLinkValue);
-                                        for (let j of temp) {
-                                            await axios.delete(`http://localhost:3001/shorten/clicks/${j._id}`);
+                                        filterData = filterData.filter(element => element._id != i._id)
+                                        await axios.delete(`http://localhost:3001/shorten/users/${i._id}`);
+                                        let { data: userLinks } = await axios.get(`http://localhost:3001/shorten/AllData?userID=${i._id}`);
+                                        for (let links of userLinks) {
+                                            let { data: clicksTempData } = await axios.get(`http://localhost:3001/shorten/clicks?userID=${i._id}`);
+                                            for (let clicksData of clicksTempData) {
+                                                
+                                                await axios.delete(`http://localhost:3001/shorten/clicks/${clicksData._id}`)
+                                            }
+                                            await axios.delete(`http://localhost:3001/shorten/AllData/${links._id}`);
                                         }
                                     }
-
-                                    setFilteredData(filterData)
-                                    setData(filterData)
+                                    setAllUsersFilteredData(filterData)
+                                    setAllUsersData(filterData)
                                     setSelected([])
                                     toast({
                                         title: `Data Deleted Successfully`,
@@ -196,43 +138,25 @@ export default function TablePage() {
                                         position: "top"
                                     })
                                 }}>
-
                             </BasicUsage>
                         </Box>
-                        <Box display={"flex"} columnGap={"20px"} flexWrap={"wrap"}>
-                            <Input placeholder="Domain" w={"45%"} border={"2px solid gray"} readOnly={!isEditable} value={domain} onChange={(e) => setDomain(e.target.value)} />
-                            <Button _hover={{ background: "lightgreen" }} color={"black"} background={"lightgreen"} display={isEditable ? "none" : "flex"} onClick={() => {
-                                setIsEditable(true)
-                            }}><EditIcon sx={{ mr: "10px" }} />Add Domain</Button>
-                            <Button _hover={{ background: "lightgreen" }} color={"black"} background={"lightgreen"} display={!isEditable ? "none" : "flex"} onClick={() => {
-                                setIsEditable(false)
-                                axios.patch(`http://localhost:3001/shorten/users/${userDetails._id}`, {
-                                    domain: domain
-                                })
-                                setDomainValue(domain)
-                            }}>Save</Button>
-                        </Box>
+
                     </Box>
                 </ChakraProvider>
                 <ChakraProvider>
-                    <Box minH={"50%"} w={"100%"} display={"flex"} justifyContent={"space-between"}>
+                    <Box h={"50%"} w={"100%"} display={"flex"} justifyContent={"space-between"}>
                         <Filters />
                     </Box>
                 </ChakraProvider>
             </Box>
             <ChakraProvider>
-                <Text sx={{ ml: "20px", mb: "10px" }}>{data.length} Links out of {shortLimit}</Text>
+                <Text sx={{ ml: "20px", mb: "10px" }}>{allUsersData.length} Users </Text>
                 <Box display={"flex"} flexDir={"column"} height={"80vh"} overflow="scroll">
-                    <TableHeader sortAscDate={sortAscDate} sortDesDate={sortDesDate} sortAsc={sortAsc} sortDes={sortDes} />
+                    <TableHeader />
                     {
-                        filteredData.map((i, index) => {
-                            let date = new Date(i.dateCreated);
-                            let str = ((date + "").split(" "))
-                            let showDate = str[2] + "-" + str[1] + "-" + str[3] + ' ' + str[4]
-                            return (
-                                <TableRows date={showDate} toast={toast} key={index + i._id} setData={setData} userDataArr={data} data={{...i,showDate}}/>
-                            )
-                        })
+                        allUsersFilteredData.map((i, index) => (
+                            <TableRows toast={toast} key={index + i._id} setData={setAllUsersData} userDataArr={allUsersData} data={i} index={index} />
+                        ))
                     }
                 </Box>
             </ChakraProvider>

@@ -19,10 +19,19 @@ export default function AddNewData() {
   const [alias, setAlias] = useState("")
   const [remarks, setRemarks] = useState("")
   const [shortLink, setShortLink] = useState("")
-  const { data, setData,newDataAdded, userDetails, setNewDataAdded, filteredData, setFilteredData, domainValue, toast } = useContext(Context);
+  const { data, setData, newDataAdded, userDetails, setNewDataAdded, filteredData, setFilteredData, domainValue, toast,
+    shortLimit,setShortLimit } = useContext(Context);
 
   async function handleSubmit() {
-    if (longURL.length == 0 || alias.length == 0) {
+    if(data.length>shortLimit){
+      return toast({
+        title: `Free Limit reached !`,
+        status: "error",
+        isClosable: true,
+        position: "top"
+      })
+    }
+    if (longURL.length === 0) {
       return toast({
         title: `Long URL and Alias is required`,
         status: "error",
@@ -30,7 +39,26 @@ export default function AddNewData() {
         position: "top"
       })
     }
-    for (let i of data) {
+    let obj = {
+      _id:uid(24),
+      longURL: longURL,
+      alias: alias,
+      shortURL: shortLink,
+      remarks: remarks,
+      clicks: 0,
+      domain: domainValue || "ceoitbox",
+      userID: userDetails._id,
+      favourite:false,
+      dateCreated:new Date()
+    }
+    if (alias.length === 0) {
+      let temp = uid().slice(0,5);
+      obj.alias = temp;
+      obj.shortURL = obj.shortURL + temp;
+    }
+    let tempAllData = await axios.get(`http://localhost:3001/shorten/AllData`);
+    tempAllData = tempAllData.data;
+    for (let i of tempAllData) {
       if (i.shortURL == shortLink) {
         return toast({
           title: `The alias is already being used on the same domain`,
@@ -40,19 +68,12 @@ export default function AddNewData() {
         })
       }
     }
-    let obj = {
-      longURL: longURL,
-      alias: alias,
-      shortURL: shortLink,
-      remarks: remarks,
-      clicks: 0,
-      domain: domainValue || "ceoitbox",
-      userID: userDetails._id
-    }
+
     axios.post(`http://localhost:3001/shorten/AllData`, obj)
-    setData([...data, obj])
-    setFilteredData([...data, obj])
-    console.log([...data, obj])
+    let tempData = [...data, obj].sort((a,b)=>Number(b.favourite)-Number(a.favourite))
+    setData(tempData)
+    setFilteredData(tempData)
+    console.log(tempData)
     setNewDataAdded(prev => !prev);
     setTimeout(() => {
       setNewDataAdded(prev => !prev);
@@ -68,7 +89,7 @@ export default function AddNewData() {
     if (longURL == "" || longURL == "http:/" || longURL == "http:" ||
       longURL == "http" || longURL == "htt" || longURL == "ht" || longURL == "h" || longURL == "h") setLongURL("http://")
   })
-  if(newDataAdded) return <Navigate to={"/"}/>
+  if (newDataAdded) return <Navigate to={"/"} />
   return (
     <Flex
       minH={'80vh'}
@@ -107,15 +128,15 @@ export default function AddNewData() {
                 align={'start'}
                 justify={'space-between'}>
               </Stack>
-                <Button
-                  onClick={handleSubmit}
-                  bg={'blue.400'}
-                  color={'white'}
-                  _hover={{
-                    bg: 'blue.500',
-                  }}>
-                  Submit
-                </Button>
+              <Button
+                onClick={handleSubmit}
+                bg={'blue.400'}
+                color={'white'}
+                _hover={{
+                  bg: 'blue.500',
+                }}>
+                Submit
+              </Button>
             </Stack>
           </Stack>
         </Box>

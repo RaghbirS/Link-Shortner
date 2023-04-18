@@ -1,54 +1,46 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Input } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
-import RangeSlider from "./Range";
-import MultipleSelectCheckmarks from "./DropDown";
-import { Context } from "../../context";
 
+import { Context } from "../../context";
+import DateRangeSlider from "./DatePaper";
+
+function isUnderDate(values, checkDate) {
+    const startDate = new Date(values[0] * 1000);
+    const endDate = new Date(values[1] * 1000);
+    if (checkDate >= startDate && checkDate <= endDate) return true;
+    return false
+}
 
 export default function Filters() {
-    const { salesPersonOptions,
-        courseOptions,
-        customerNameOptions,
-        customerEmailOptions, data, setFilteredData } = useContext(Context);
-    const [salesPersonFilterValue, setSalesPersonFilterValue] = useState([])
-    const [courseFilterValue, setCourseFilterValue] = useState([])
-    const [customerNameFilterValue, setCustomerNameFilterValue] = useState([])
-    const [customerEmailFilterRangeValue, setCustomerEmailFilterRangeValue] = useState([])
-    const [coursePriceFilterRangeValue, setCoursePriceFilterRangeValue] = useState([0, 100000]);
-    const [PIDateFilterRangeValue, setPIDateFilterRangeValue] = useState([0, 1000]);
-    function has(arr, str) {
-        if (arr.length === 0) return true;
-        return arr.includes(str)
-    }
-    function underRange(arr, val) {
-        if (val > arr[0] && val < arr[1]) {
-            return true
-        }
-        else {
-            return false
-        }
-    }
+    const { data, setFilteredData } = useContext(Context);
+    const [searchLongURL, setSearchLongURL] = useState("")
+    const [searchAlias, setSearchAlias] = useState("")
+    const [searchShortURL, setsearchShortURL] = useState("")
+    const [searchRemarks, setSearchRemarks] = useState("")
+    const [sliderValues, setSliderValues] = useState([new Date('2022.01.01').getTime() / 1000, new Date().getTime() / 1000]);
+    const { setData, isLogin, userDetails, selected, setSelected, filteredData, editing, setEditing, toast
+        , domainValue, setDomainValue, clickDetails,
+        shortLimit,setShortLimit
+    } = useContext(Context);
     useEffect(() => {
-        if (salesPersonFilterValue.length === 0 && courseFilterValue.length === 0 && customerNameFilterValue.length === 0 && customerEmailFilterRangeValue.length === 0 && coursePriceFilterRangeValue[0]==0 && coursePriceFilterRangeValue[0]==100000) return setFilteredData(data)
         let temp = [];
         for (let i of data) {
-            if (has(salesPersonFilterValue, i.salesPerson) && has(courseFilterValue, i.course) && has(customerNameFilterValue, i.customerName) && has(customerEmailFilterRangeValue, i.customerEmail) && underRange(coursePriceFilterRangeValue, i.coursePrice)
-            ) {
+            isUnderDate(sliderValues, new Date(i.dateCreated))
+            if (isUnderDate(sliderValues, new Date(i.dateCreated)) && i.longURL.includes(searchLongURL) && i.alias.includes(searchAlias) && i.shortURL.includes(searchShortURL) && i.remarks.includes(searchRemarks)) {
                 temp.push(i)
             }
         }
         setFilteredData(temp)
-    }, [salesPersonFilterValue, courseFilterValue, customerNameFilterValue, customerEmailFilterRangeValue,coursePriceFilterRangeValue, PIDateFilterRangeValue])
+    }, [searchLongURL, searchAlias, searchShortURL, searchRemarks, sliderValues, setFilteredData])
     return (
         <Box h={"100%"} w={"100%"} display={"flex"} flexDir={"column"} gap={"10px"}>
-            <Box width={"100%"} height={"50%"} display={"flex"} justifyContent={"space-evenly"} alignItems={"center"}>
-                <MultipleSelectCheckmarks w={"250"} tag={"Sales Person"} state={[salesPersonFilterValue, setSalesPersonFilterValue]} options={salesPersonOptions} />
-                <MultipleSelectCheckmarks w={"250"} tag={"Course"} state={[courseFilterValue, setCourseFilterValue]} options={courseOptions} />
-                <MultipleSelectCheckmarks w={"250"} tag={"Customer Name"} state={[customerNameFilterValue, setCustomerNameFilterValue]} options={customerNameOptions} />
-                <MultipleSelectCheckmarks w={"300"} tag={"Customer Email"} state={[customerEmailFilterRangeValue, setCustomerEmailFilterRangeValue]} options={customerEmailOptions} />
-            </Box>
-            <Box width={"100%"} height={"50%"} display={"flex"} justifyContent={"space-evenly"} alignItems={"center"}>
-                <RangeSlider tag={"Course Price"} val={coursePriceFilterRangeValue} func={setCoursePriceFilterRangeValue} />
+            <Box width={"100%"} minHeight={"50%"} display={"flex"} columnGap={"5px"} flexWrap={"wrap"} alignItems={"center"}>
+                <Input placeholder="Unique ID" onChange={() => { }} w={"300px"} value={userDetails._id} />
+                <Input value={searchLongURL} onChange={e => setSearchLongURL(e.target.value)} w={"250"} placeholder={"Search Long URL"} />
+                <Input value={searchAlias} onChange={e => setSearchAlias(e.target.value)} w={"250"} placeholder={"Search Alias"} />
+                <Input value={searchShortURL} onChange={e => setsearchShortURL(e.target.value)} w={"250"} placeholder={"Search Short URL"} />
+                <Input value={searchRemarks} onChange={e => setSearchRemarks(e.target.value)} w={"300"} placeholder={"Search Remarks"} />
+                <DateRangeSlider sliderValues={sliderValues} setSliderValues={setSliderValues} />
             </Box>
         </Box>
     )
