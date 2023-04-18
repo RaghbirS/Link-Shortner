@@ -13,6 +13,7 @@ const io = require('socket.io')(server, {
         origin: '*',
     }
 });
+const url = require('url');
 const { uid } = require("uid")
 const port = 3001;
 const { connection,
@@ -85,8 +86,9 @@ app.get("/:alias", async (req, res) => {
         const alias = req.params.alias;
         const data = await AllLinksModel.find();
         let longURL = "";
+        // const domain = `${url.parse(req.protocol + '://' + req.get('host')).hostname}`;
         const domain = `http://${req.get("Host")}/${alias}`;
-        console.log(`http://${req.get("Host")}/${alias}`)
+        console.log(domain)
         let geo = geoip.lookup(req.clientIp);
         let info = platform.parse(req.headers["user-agent"]);
         let country = geo ? geo.country : "Unknown";
@@ -107,6 +109,7 @@ app.get("/:alias", async (req, res) => {
             shortURL: domain
         };
         for (let i of data) {
+            console.log(i.shortURL == domain)
             if (i.shortURL == domain) {
                 longURL = i.longURL;
                 let obj = {
@@ -122,6 +125,7 @@ app.get("/:alias", async (req, res) => {
                 return
             }
         }
+        res.send({domain})
 
     } catch (err) {
         console.log(err)
