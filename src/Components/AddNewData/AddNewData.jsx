@@ -93,6 +93,7 @@ export default function AddNewData() {
       longURL == "http" || longURL == "htt" || longURL == "ht" || longURL == "h" || longURL == "h") setLongURL("http://")
   })
   if (newDataAdded) return <Navigate to={"/links"} />
+  console.log()
   return (
     <Flex
       minH={'80vh'}
