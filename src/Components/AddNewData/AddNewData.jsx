@@ -92,7 +92,7 @@ export default function AddNewData() {
     if (longURL == "" || longURL == "http:/" || longURL == "http:" ||
       longURL == "http" || longURL == "htt" || longURL == "ht" || longURL == "h" || longURL == "h") setLongURL("http://")
   })
-  if (newDataAdded) return <Navigate to={"/"} />
+  if (newDataAdded) return <Navigate to={"/links"} />
   return (
     <Flex
       minH={'80vh'}
