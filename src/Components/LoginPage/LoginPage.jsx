@@ -22,7 +22,8 @@ export default function LoginPage() {
   const [showError, setShowError] = useState(false)
   async function login() {
     setShowError(true)
-    let data = await axios.get("http://localhost:3001/shorten/users");
+    let data = await axios.get("https://shortlinkapi.onrender.com/shorten/users");
+    // let data = await axios.get("http://localhost:3001/shorten/users");
     data = data.data;
     for (let i of data) {
       if (i.email === email && i.password === password) {

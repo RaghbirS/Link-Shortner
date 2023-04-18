@@ -122,7 +122,8 @@ export default function TableRows({ data, userDataArr, setData, toast,showDate,d
             <Input color={!isReadOnly ? "white" : "black"} background={!isReadOnly ? "#888888" : "none"} flexShrink={0} w={"10%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={isReadOnly} onChange={(e) => {
                 setAliasValue(e.target.value)
                 if (!domainValue) {
-                    setShortLinkValue(`http://localhost:3001/${e.target.value}`)
+                    setShortLinkValue(`https://shortlinkapi.onrender.com/${e.target.value}`)
+                    // setShortLinkValue(`http://localhost:3001/${e.target.value}`)
                 }
                 else {
                     setShortLinkValue(`http://${domainValue}.in/${e.target.value}`)
@@ -153,7 +154,8 @@ export default function TableRows({ data, userDataArr, setData, toast,showDate,d
                     window.open(`https://api.whatsapp.com/send?phone=&text=${shortLinkValue}`, "_black")
                 }} />
                 <CustomIconStar bg={favourite?"yellow":"black"} onClick={async ()=>{
-                    await axios.patch(`http://localhost:3001/shorten/Alldata/${_id}`,{
+                    await axios.patch(`https://shortlinkapi.onrender.com/shorten/Alldata/${_id}`,{
+                    // await axios.patch(`http://localhost:3001/shorten/Alldata/${_id}`,{
                         favourite:!favourite
                     })
                     let temp = [...userDataArr]

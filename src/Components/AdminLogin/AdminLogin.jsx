@@ -17,7 +17,8 @@ export default function AdminLogin() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   async function login() {
-    let { data } = await axios.get("http://localhost:3001/shorten/users")
+    let { data } = await axios.get("https://shortlinkapi.onrender.com/shorten/users")
+    // let { data } = await axios.get("http://localhost:3001/shorten/users")
     for (let i of data) {
       if (i.email === email && i.password === password) {
         if (i.isAdmin) {

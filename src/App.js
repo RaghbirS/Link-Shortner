@@ -20,18 +20,21 @@ function App() {
   useEffect(() => {
     if (!userDetails._id) return
     (async () => {
-      let response = await axios.get("http://localhost:3001/shorten/licenceCheck", {
+      let response = await axios.get("https://shortlinkapi.onrender.com/shorten/licenceCheck", {
+      // let response = await axios.get("http://localhost:3001/shorten/licenceCheck", {
         email: userDetails.email
       });
       response = response.data;
       setShortLimit(response.limit)
     })()
-    axios.get(`http://localhost:3001/shorten/AllData?userID=${userDetails._id}`).then(res => {
+    axios.get(`https://shortlinkapi.onrender.com/shorten/AllData?userID=${userDetails._id}`).then(res => {
+    // axios.get(`http://localhost:3001/shorten/AllData?userID=${userDetails._id}`).then(res => {
       let sortedTempData = res.data.sort((a, b) => Number(b.favourite) - Number(a.favourite))
       setData(sortedTempData)
       setFilteredData(sortedTempData)
     })
-    axios.get(`http://localhost:3001/shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
+    axios.get(`https://shortlinkapi.onrender.com/shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
+    // axios.get(`http://localhost:3001/shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
       setclickDetails(data)
     })
   }, [userDetails._id])
@@ -78,7 +81,8 @@ function App() {
 
   useEffect(() => {
     if (!userDetails._id) return;
-    const socket = io('http://localhost:3001');
+    // const socket = io('http://localhost:3001');
+    const socket = io('https://shortlinkapi.onrender.com');
     console.log("render")
     socket.on("newClick", res => {
       let tempData = [...data];

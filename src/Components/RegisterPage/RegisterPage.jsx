@@ -64,7 +64,8 @@ export default function RegisterPage() {
       password,
       domain:""
     }
-    axios.post("http://localhost:3001/shorten/users", obj);
+    axios.post("https://shortlinkapi.onrender.com/shorten/users", obj);
+    // axios.post("http://localhost:3001/shorten/users", obj);
     setFirstName("")
     setLastName("")
     setEmail("")
@@ -108,7 +109,8 @@ export default function RegisterPage() {
                 onClick={async () => {
 
                   if (otpTimeout > 0 || !isValidEmail() || isOtpVerified) return
-                  let { data } = await axios.get(`http://localhost:3001/shorten/users?email=${email}`);
+                  let { data } = await axios.get(`https://shortlinkapi.onrender.com/shorten/users?email=${email}`);
+                  // let { data } = await axios.get(`http://localhost:3001/shorten/users?email=${email}`);
                   if (data.length == 1) {
                     return toast({
                       title: `User already exist`,
@@ -128,7 +130,8 @@ export default function RegisterPage() {
                     });
                   }, 1000)
 
-                  axios.post("http://localhost:3001/shorten/sendOtp", { email }).then(res => setVerificationOtp(res.data + ""));
+                  axios.post("https://shortlinkapi.onrender.com/shorten/sendOtp", { email }).then(res => setVerificationOtp(res.data + ""));
+                  // axios.post("http://localhost:3001/shorten/sendOtp", { email }).then(res => setVerificationOtp(res.data + ""));
                   toast({
                     title: `OTP sent`,
                     status: "success",

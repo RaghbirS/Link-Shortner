@@ -71,7 +71,8 @@ export default function TablePage() {
         setFilteredData(sortedData);
     }
     useEffect(() => {
-        axios.get(`http://localhost:3001/shorten/users/${userDetails._id}`).then(res => {
+        axios.get(`https://shortlinkapi.onrender.com/shorten/users/${userDetails._id}`).then(res => {
+        // axios.get(`http://localhost:3001/shorten/users/${userDetails._id}`).then(res => {
             setDomainValue(res.data.domain);
             setDomain(res.data.domain)
         })
@@ -122,12 +123,14 @@ export default function TablePage() {
                                             break
                                         }
                                     }
-                                    await axios.patch(`http://localhost:3001/shorten/AllData/${i._id}`, temp)
+                                    await axios.patch(`https://shortlinkapi.onrender.com/shorten/AllData/${i._id}`, temp)
+                                    // await axios.patch(`http://localhost:3001/shorten/AllData/${i._id}`, temp)
                                     i.setCheck(false)
                                     i.setIsReadOnly(true)
                                 }
                                 for (let i of clickDetails) {
-                                    await axios.patch(`http://localhost:3001/shorten/clicks/${i._id}`, {
+                                    await axios.patch(`https://shortlinkapi.onrender.com/shorten/clicks/${i._id}`, {
+                                    // await axios.patch(`http://localhost:3001/shorten/clicks/${i._id}`, {
                                         shortURL: i.shortURL
                                     })
                                 }
@@ -172,7 +175,8 @@ export default function TablePage() {
 
                                     for (let i of selected) {
                                         console.log(selected)
-                                        await axios.delete(`http://localhost:3001/shorten/AllData/${i._id}`);
+                                        await axios.delete(`https://shortlinkapi.onrender.com/shorten/AllData/${i._id}`);
+                                        // await axios.delete(`http://localhost:3001/shorten/AllData/${i._id}`);
 
                                     }
                                     let filterData = [...data];
@@ -182,7 +186,8 @@ export default function TablePage() {
                                     for (let i of selected) {
                                         let temp = clickDetails.filter(element => element.shortURL == i.shortLinkValue);
                                         for (let j of temp) {
-                                            await axios.delete(`http://localhost:3001/shorten/clicks/${j._id}`);
+                                            await axios.delete(`https://shortlinkapi.onrender.com/shorten/clicks/${j._id}`);
+                                            // await axios.delete(`http://localhost:3001/shorten/clicks/${j._id}`);
                                         }
                                     }
 
@@ -206,7 +211,8 @@ export default function TablePage() {
                             }}><EditIcon sx={{ mr: "10px" }} />Add Domain</Button>
                             <Button _hover={{ background: "lightgreen" }} color={"black"} background={"lightgreen"} display={!isEditable ? "none" : "flex"} onClick={() => {
                                 setIsEditable(false)
-                                axios.patch(`http://localhost:3001/shorten/users/${userDetails._id}`, {
+                                axios.patch(`https://shortlinkapi.onrender.com/shorten/users/${userDetails._id}`, {
+                                // axios.patch(`http://localhost:3001/shorten/users/${userDetails._id}`, {
                                     domain: domain
                                 })
                                 setDomainValue(domain)

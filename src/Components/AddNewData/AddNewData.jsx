@@ -56,7 +56,8 @@ export default function AddNewData() {
       obj.alias = temp;
       obj.shortURL = obj.shortURL + temp;
     }
-    let tempAllData = await axios.get(`http://localhost:3001/shorten/AllData`);
+    let tempAllData = await axios.get(`https://shortlinkapi.onrender.com/shorten/AllData`);
+    // let tempAllData = await axios.get(`http://localhost:3001/shorten/AllData`);
     tempAllData = tempAllData.data;
     for (let i of tempAllData) {
       if (i.shortURL == shortLink) {
@@ -69,7 +70,8 @@ export default function AddNewData() {
       }
     }
 
-    axios.post(`http://localhost:3001/shorten/AllData`, obj)
+    axios.post(`https://shortlinkapi.onrender.com/shorten/AllData`, obj)
+    // axios.post(`http://localhost:3001/shorten/AllData`, obj)
     let tempData = [...data, obj].sort((a,b)=>Number(b.favourite)-Number(a.favourite))
     setData(tempData)
     setFilteredData(tempData)
@@ -81,7 +83,8 @@ export default function AddNewData() {
   }
   useEffect(() => {
     if (!domainValue) {
-      setShortLink(`http://localhost:3001/${alias}`)
+      setShortLink(`https://shortlinkapi.onrender.com/${alias}`)
+      // setShortLink(`http://localhost:3001/${alias}`)
     }
     else {
       setShortLink(`http://${domainValue}.in/${alias}`)
