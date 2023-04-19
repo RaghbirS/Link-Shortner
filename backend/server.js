@@ -95,6 +95,7 @@ app.get("/:alias", async (req, res) => {
 
         let geo = geoip.lookup(req.ipInfo.ip);
         console.log(geo)
+        console.log(req.ipInfo.ip)
         let info = platform.parse(req.headers["user-agent"]);
         let country = geo ? geo.country : "Unknown";
         let region = geo ? geo.region : "Unknown";

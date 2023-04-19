@@ -83,8 +83,8 @@ export default function AddNewData() {
   }
   useEffect(() => {
     if (!domainValue) {
-      // setShortLink(`https://shortlinkapi.onrender.com/${alias}`)
-      setShortLink(`http://localhost:3001/${alias}`)
+      setShortLink(`https://shortlinkapi.onrender.com/${alias}`)
+      // setShortLink(`http://localhost:3001/${alias}`)
     }
     else {
       setShortLink(`http://${domainValue}.in/${alias}`)
