@@ -13,6 +13,8 @@ const io = require('socket.io')(server, {
         origin: '*',
     }
 });
+const expressIp = require('express-ip');
+app.use(expressIp().getIpInfoMiddleware);
 const url = require('url');
 const { uid } = require("uid")
 const port = 3001;
@@ -87,9 +89,11 @@ app.get("/:alias", async (req, res) => {
         const data = await AllLinksModel.find();
         let longURL = "";
         // const domain = `${url.parse(req.protocol + '://' + req.get('host')).hostname}`;
+        // const domain = `http://${req.get("Host")}/${alias}`;
         const domain = `https://${req.get("Host")}/${alias}`;
-        console.log(domain)
-        let geo = geoip.lookup(req.clientIp);
+        // console.log(domain)
+
+        let geo = geoip.lookup(req.ipInfo.ip);
         console.log(geo)
         let info = platform.parse(req.headers["user-agent"]);
         let country = geo ? geo.country : "Unknown";
@@ -110,7 +114,6 @@ app.get("/:alias", async (req, res) => {
             shortURL: domain
         };
         for (let i of data) {
-            console.log(i.shortURL == domain)
             if (i.shortURL == domain) {
                 longURL = i.longURL;
                 let obj = {
