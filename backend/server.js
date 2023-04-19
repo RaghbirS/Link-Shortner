@@ -90,6 +90,7 @@ app.get("/:alias", async (req, res) => {
         const domain = `https://${req.get("Host")}/${alias}`;
         console.log(domain)
         let geo = geoip.lookup(req.clientIp);
+        console.log(geo)
         let info = platform.parse(req.headers["user-agent"]);
         let country = geo ? geo.country : "Unknown";
         let region = geo ? geo.region : "Unknown";
