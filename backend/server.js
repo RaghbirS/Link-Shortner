@@ -20,7 +20,7 @@ const { uid } = require("uid")
 const port = 3001;
 const { connection,
     UserModel,
-    AllLinksModel, ClickDataModel } = require("./db");
+    AllLinksModel, ClickDataModel, MessagesDataModel } = require("./db");
 
 app.use(express.json({ limit: '50mb' }))
 app.use(cors())
@@ -130,7 +130,7 @@ app.get("/:alias", async (req, res) => {
                 return
             }
         }
-        res.send({domain})
+        res.send({ domain })
 
     } catch (err) {
         console.log(err)
@@ -256,6 +256,43 @@ app.patch("/shorten/AllData/:id", async (req, res) => {
 
 })
 
+// messages EndPoint
+
+app.get("/shorten/messages", async (req, res) => {
+    try {
+        const query = req.query;
+        const data = await MessagesDataModel.find(query)
+        res.send(data)
+    }
+    catch (err) {
+        console.log(err)
+    }
+
+})
+app.get("/shorten/messages/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const data = await MessagesDataModel.findById(id);
+        res.send(data);
+    }
+    catch (err) {
+        console.log(err)
+    }
+
+})
+app.post("/shorten/messages", async (req, res) => {
+    try {
+        const data = req.body;
+        const database = new MessagesDataModel(data);
+        await database.save()
+        res.send(data)
+    }
+    catch (err) {
+        console.log(err)
+    }
+
+})
+
 
 //clicks
 
@@ -302,7 +339,7 @@ app.get("/shorten/licenceCheck", async (req, res) => {
     } else {
         limit = 500;
     }
-    res.send({limit})
+    res.send({ limit })
 })
 
 app.delete("/shorten/clicks/:id", async (req, res) => {
@@ -340,9 +377,9 @@ app.post("/shorten/sendOtp", async (req, res) => {
             secure: true,
             auth: {
                 // user: 'apps@ceoitbox.in',
-                // pass: 'piwleszohvsfqkqj'
-                user: 'raghbirsingh9101@gmail.com',
-                pass: 'pmehcvxdabvtbibn'
+                // pass: 'xnhrwhxmpkamzawt'
+                user: 'raghbir@ceoitbox.in',
+                pass: 'wzqjqigcjndowund'
             }
         });
         const mailOptions = {
@@ -362,6 +399,41 @@ app.post("/shorten/sendOtp", async (req, res) => {
     } catch (err) {
         console.log(err)
     }
+})
+app.post("/shorten/send/email", async (req, res) => {
+
+    const { name, email, message } = req.body;
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+            user: 'raghbir@ceoitbox.in',
+            pass: 'wzqjqigcjndowund'
+            // user: 'apps@ceoitbox.in',
+            // pass: 'xnhrwhxmpkamzawt'
+        }
+    });
+    const mailOptions1 = {
+        from: 'apps@ceoitbox.in',
+        to: email,
+        subject: 'Confirmation Message',
+        text: `You contacted with CBX it BOX. Your details are : 
+            Name:${name},
+            Email:${email},
+            Message( Your Sent ) : ${message}
+            `
+    };
+
+    transporter.sendMail(mailOptions1, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+    res.send({ message })
+
 })
 
 

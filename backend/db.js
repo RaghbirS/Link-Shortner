@@ -33,14 +33,21 @@ const clickDataSchema = mongoose.Schema({
     userID:String,
     shortURL:String
 })
+const messagesData = mongoose.Schema({
+    name: String,
+    email: String,
+    message: String,
+})
 
 const UserModel = mongoose.model("user", userSchema);
 const AllLinksModel = mongoose.model("AllLinks", allLinksSchema);
 const ClickDataModel = mongoose.model("clicks", clickDataSchema);
+const MessagesDataModel = mongoose.model("messages", messagesData);
 
 module.exports = {
     connection,
     UserModel,
     AllLinksModel,
-    ClickDataModel
+    ClickDataModel,
+    MessagesDataModel
 }
