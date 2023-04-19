@@ -31,7 +31,9 @@ export default function RegisterPage() {
   const [otpTimeout, setOtpTimeout] = useState(0);
   const [verificationOtp, setVerificationOtp] = useState("");
   const [inputOtp, setInputOtp] = useState("");
-  const [submited, setSubmited] = useState(false)
+  const [submited, setSubmited] = useState(false);
+  const [isOtpSent, setIsOtpSent] = useState(false);
+
   function handleSubmit() {
     if (!isOtpVerified) return toast({
       title: `OTP is not verified`,
@@ -108,7 +110,12 @@ export default function RegisterPage() {
               <Button bg={'blue.100'} disabled={!isValidEmail() || otpTimeout > 0 || isOtpVerified}
                 onClick={async () => {
 
-                  if (otpTimeout > 0 || !isValidEmail() || isOtpVerified) return
+                  if (otpTimeout > 0 || !isValidEmail() || isOtpVerified) return toast({
+                    title: `Please enter a Valid Email..`,
+                    status: "warning",
+                    isClosable: true,
+                    position: "top",
+                  })
                   let { data } = await axios.get(`https://shortlinkapi.onrender.com/shorten/users?email=${email}`);
                   // let { data } = await axios.get(`http://localhost:3001/shorten/users?email=${email}`);
                   if (data.length == 1) {
@@ -147,6 +154,12 @@ export default function RegisterPage() {
               </FormControl>
               <Button disabled={isOtpVerified} onClick={() => {
                 console.log(verificationOtp, inputOtp)
+                if(!isOtpSent) return toast({
+                  title: `Please send the OTP first.`,
+                  status: "warning",
+                  isClosable: true,
+                  position: "top",
+                })
                 if (verificationOtp == inputOtp) {
                   setIsOtpVerified(true)
                   toast({

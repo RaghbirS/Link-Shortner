@@ -1,11 +1,11 @@
 .openBoxes{
     padding: 0 40px;
     transition: .5s linear !important;
-    transition-property: height !important;
+    /* transition-property: height !important; */
     overflow: hidden;
 }
 .openBoxes:hover{
-    height: 300px;
+    height: 350px;
     background: orange;
 }
 .contactInputs{
