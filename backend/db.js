@@ -8,8 +8,9 @@ const userSchema = mongoose.Schema({
     lastName: String,
     email: String,
     password: String,
-    domain:String,
-    isAdmin:Boolean
+    domain: String,
+    isAdmin: Boolean,
+    googleSheetDeployLink: String
 })
 
 const allLinksSchema = mongoose.Schema({
@@ -18,9 +19,9 @@ const allLinksSchema = mongoose.Schema({
     shortURL: String,
     remarks: String,
     clicks: Number,
-    userID:String,
-    favourite:Boolean,
-    dateCreated:Object
+    userID: String,
+    favourite: Boolean,
+    dateCreated: Object
 })
 
 const clickDataSchema = mongoose.Schema({
@@ -29,9 +30,9 @@ const clickDataSchema = mongoose.Schema({
     latitude: String,
     longitude: String,
     browser: String,
-    os:String,
-    userID:String,
-    shortURL:String
+    os: String,
+    userID: String,
+    shortURL: String
 })
 const messagesData = mongoose.Schema({
     name: String,

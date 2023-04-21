@@ -15,10 +15,13 @@ import AdminLogin from "./Components/AdminLogin/AdminLogin";
 import AdminPage from "./Components/AdminPage/AdminTablePage";
 import HomePage from "./Components/HomePage/HomePage";
 function App() {
-  const { data, setData, isLogin, userDetails, setFilteredData, toast, newDataAdded, filteredData, clickDetails, setShortLimit, setclickDetails, isAdminLogin, setisAdminLogin } = useContext(Context);
+  const { data, setData, isLogin, userDetails, setFilteredData, toast, newDataAdded, filteredData,
+     clickDetails, setShortLimit, setclickDetails, isAdminLogin, setisAdminLogin,
+     googleSheetDeployLink,setGoogleSheetDeployLink } = useContext(Context);
   const [count, setCount] = useState(1);
   useEffect(() => {
-    if (!userDetails._id) return
+    if (!userDetails._id) return;
+    
     (async () => {
       let response = await axios.get("https://shortlinkapi.onrender.com/shorten/licenceCheck", {
       // let response = await axios.get("http://localhost:3001/shorten/licenceCheck", {
@@ -61,7 +64,11 @@ function App() {
       })
     }
   }, [userDetails._id]);
-
+  useEffect(()=>{
+    axios.get(`https://shortlinkapi.onrender.com/shorten/users/${userDetails._id}`).then(res=>{
+      setGoogleSheetDeployLink(res.data.googleSheetDeployLink || "")
+    })
+  },[])
 
   useEffect(() => {
     if (count == 1) {

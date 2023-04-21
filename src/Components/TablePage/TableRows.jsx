@@ -1,5 +1,5 @@
 import { Box, Button, Icon, Input, Text } from "@chakra-ui/react";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Context } from "../../context";
 import { CopyIcon, EmailIcon } from "@chakra-ui/icons";
 
@@ -25,8 +25,8 @@ function CustomIconEmail({ onClick }) {
 function CustomIconWhatsApp({ onClick }) {
     return <svg onClick={onClick} style={{ height: "75%", cursor: "pointer" }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" /></svg>
 }
-function CustomIconStar({ onClick,bg }) {
-    return <svg onClick={onClick} style={{ height: "75%", cursor: "pointer",fill:bg }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/></svg>
+function CustomIconStar({ onClick, bg }) {
+    return <svg onClick={onClick} style={{ height: "75%", cursor: "pointer", fill: bg }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z" /></svg>
 }
 
 const style = {
@@ -42,14 +42,14 @@ const style = {
 };
 
 
-export default function TableRows({ data, userDataArr, setData, toast,showDate,date
+export default function TableRows({ data, userDataArr, setData, toast, showDate, date
 }) {
-    const { selected, setSelected, editing, domainValue, userDetails, setFilteredData, clickDetails, setclickDetails,filteredData
-        ,mapData,setMapData
+    const { googleSheetDeployLink, setGoogleSheetDeployLink, selected, setSelected, editing, domainValue, userDetails, setFilteredData, clickDetails, setclickDetails, filteredData
+        , mapData, setMapData
     } = useContext(Context);
     const [check, setCheck] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(true);
-    const { clicks, longURL, alias, remarks, shortURL, _id ,favourite} = data;
+    const { clicks, longURL, alias, remarks, shortURL, _id, favourite } = data;
     const [longURLValue, setLongURLValue] = useState(longURL)
     const [aliasValue, setAliasValue] = useState(alias)
     const [remarksValue, setRemarksValue] = useState(remarks)
@@ -57,6 +57,8 @@ export default function TableRows({ data, userDataArr, setData, toast,showDate,d
     const [count, setCount] = useState(1);
     const [openQR, setOpenQR] = useState(false);
     const [openClicks, setopenClicks] = useState(false);
+    const [isGoogleSheetEditable, setIsGoogleSheetEditable] = useState(false);
+    const deployLinkRef = useRef(null);
     useEffect(() => {
         console.log(date)
         if (count == 1) {
@@ -82,15 +84,15 @@ export default function TableRows({ data, userDataArr, setData, toast,showDate,d
         setData(temp);
         setFilteredData(temp);
     }, [longURLValue, aliasValue, remarksValue, shortLinkValue])
-    useEffect(()=>{
+    useEffect(() => {
         let temp = [...clickDetails];
-        for(let i = 0;i<temp.length;i++){
-            if(temp[i].shortURL==shortURL){
+        for (let i = 0; i < temp.length; i++) {
+            if (temp[i].shortURL == shortURL) {
                 temp[i].shortURL = shortLinkValue;
             }
         }
         setclickDetails(temp)
-    },[aliasValue])
+    }, [aliasValue])
     return (
         <Box display={"flex"} minW={"100%"} background={"none"}>
             <Box flexShrink={0} overflow={"hidden"} borderRadius={"none"} h={"40px"} type={"checkbox"} w={"6%"} border={"1px solid #dee2e6"} textAlign={"center"} >
@@ -144,7 +146,7 @@ export default function TableRows({ data, userDataArr, setData, toast,showDate,d
                 </Box>
             </Box>
             <Input color={!isReadOnly ? "white" : "black"} background={!isReadOnly ? "#888888" : "none"} flexShrink={0} w={"10%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={isReadOnly} onChange={(e) => setRemarksValue(e.target.value)} borderRadius={"none"} h={"40px"} value={remarksValue} border={"2px solid #dee2e6"}></Input>
-            <Box onClick={() => setopenClicks(true)} flexShrink={0} w={"8%"} cursor={"pointer"} borderRadius={"none"} h={"40px"} border={"2px solid #dee2e6"} display={"flex"} justifyContent={"center"} alignItems={"center"} ><p style={{textDecoration:"underline", color:"blue"}}>{clickDetails.filter(i=>i.shortURL==shortLinkValue).length}</p></Box>
+            <Box onClick={() => setopenClicks(true)} flexShrink={0} w={"8%"} cursor={"pointer"} borderRadius={"none"} h={"40px"} border={"2px solid #dee2e6"} display={"flex"} justifyContent={"center"} alignItems={"center"} ><p style={{ textDecoration: "underline", color: "blue" }}>{clickDetails.filter(i => i.shortURL == shortLinkValue).length}</p></Box>
             <Box flexShrink={0} w={"15%"} cursor={"default"} onChange={(e) => (e.target.value)} borderRadius={"none"} h={"40px"} border={"2px solid #dee2e6"} display={"flex"} justifyContent={"center"} alignItems={"center"} gap={"20px"}>
                 <CustomIconQR onClick={() => setOpenQR(true)} />
                 <CustomIconEmail onClick={() => {
@@ -153,32 +155,43 @@ export default function TableRows({ data, userDataArr, setData, toast,showDate,d
                 <CustomIconWhatsApp onClick={() => {
                     window.open(`https://api.whatsapp.com/send?phone=&text=${shortLinkValue}`, "_black")
                 }} />
-                <CustomIconStar bg={favourite?"yellow":"black"} onClick={async ()=>{
-                    await axios.patch(`https://shortlinkapi.onrender.com/shorten/Alldata/${_id}`,{
-                    // await axios.patch(`http://localhost:3001/shorten/Alldata/${_id}`,{
-                        favourite:!favourite
+                <CustomIconStar bg={favourite ? "yellow" : "black"} onClick={async () => {
+                    await axios.patch(`https://shortlinkapi.onrender.com/shorten/Alldata/${_id}`, {
+                        // await axios.patch(`http://localhost:3001/shorten/Alldata/${_id}`,{
+                        favourite: !favourite
                     })
                     let temp = [...userDataArr]
-                    for(let i = 0;i<temp.length;i++){
-                        if(temp[i]._id==_id){
+                    for (let i = 0; i < temp.length; i++) {
+                        if (temp[i]._id == _id) {
                             temp[i].favourite = !favourite;
-                            setFilteredData(temp.sort((a,b)=>Number(b.favourite)-Number(a.favourite)))
-                            return setData(temp.sort((a,b)=>Number(b.favourite)-Number(a.favourite)))
+                            setFilteredData(temp.sort((a, b) => Number(b.favourite) - Number(a.favourite)))
+                            return setData(temp.sort((a, b) => Number(b.favourite) - Number(a.favourite)))
                         }
                     }
-                }}/>
+                }} />
             </Box>
 
             <Modal isOpen={openClicks} onClose={() => setopenClicks(false)} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description" > <ModalOverlay />
                 <ModalContent sx={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100vw" }}>
                     <Box w={"950px"} minH={"70vh"} bg={"white"} overflowY={"scroll"} display={"flex"} flexDirection={"column"}>
                         <Box h={"50px"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} p={"40px"}>
-                        <NavLink to={"/map"}><Button onClick={()=>{ 
-                            let temp = clickDetails.filter(i=>i.shortURL==shortLinkValue)
-                            setMapData(temp)
-                            console.log(temp)
-                        }}>Map</Button></NavLink>
-                        <Button onClick={()=>{}}>Google Sheets</Button>
+                            <NavLink to={"/map"}><Button onClick={() => {
+                                let temp = clickDetails.filter(i => i.shortURL == shortLinkValue)
+                                setMapData(temp)
+                                console.log(temp)
+                            }}>Map</Button></NavLink>
+                            <Box display={"flex"} gap={"10px"} alignItems={"center"}>
+                                <Text>Google Sheets</Text>
+                                <Input readOnly={!isGoogleSheetEditable} ref={deployLinkRef} w={"200px"} defaultValue={googleSheetDeployLink} />
+                                <Button display={!isGoogleSheetEditable?"flex":"none"} onClick={() => {setIsGoogleSheetEditable(true) }}>Edit</Button>
+                                <Button display={isGoogleSheetEditable?"flex":"none"} onClick={() => {
+                                    setIsGoogleSheetEditable(false)
+                                    axios.patch(`https://shortlinkapi.onrender.com/shorten/users/${userDetails._id}`,{
+                                        googleSheetDeployLink:deployLinkRef.current.value
+                                    })
+                                    setGoogleSheetDeployLink(deployLinkRef.current.value)
+                                 }}>Save</Button>
+                            </Box>
                         </Box>
                         <Box h={"50px"} display={"flex"} background={"#edf2fa"}>
                             <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} letterSpacing={"3px"}>CITY</Box>
@@ -189,7 +202,7 @@ export default function TableRows({ data, userDataArr, setData, toast,showDate,d
                             <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} letterSpacing={"3px"}>OS</Box>
                         </Box>
                         {
-                            clickDetails.filter(j=>j.shortURL==shortLinkValue).map((i) => (
+                            clickDetails.filter(j => j.shortURL == shortLinkValue).map((i) => (
                                 <Box key={i._id} h={"50px"} display={"flex"} >
                                     <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} >{i.city}</Box>
                                     <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} flex={1} >{i.country}</Box>

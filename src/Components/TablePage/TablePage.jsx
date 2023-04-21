@@ -123,13 +123,13 @@ export default function TablePage() {
                                             break
                                         }
                                     }
-                                    await axios.patch(`https://shortlinkapi.onrender.com/shorten/AllData/${i._id}`, temp)
+                                    axios.patch(`https://shortlinkapi.onrender.com/shorten/AllData/${i._id}`, temp)
                                     // await axios.patch(`http://localhost:3001/shorten/AllData/${i._id}`, temp)
                                     i.setCheck(false)
                                     i.setIsReadOnly(true)
                                 }
                                 for (let i of clickDetails) {
-                                    await axios.patch(`https://shortlinkapi.onrender.com/shorten/clicks/${i._id}`, {
+                                    axios.patch(`https://shortlinkapi.onrender.com/shorten/clicks/${i._id}`, {
                                     // await axios.patch(`http://localhost:3001/shorten/clicks/${i._id}`, {
                                         shortURL: i.shortURL
                                     })
@@ -175,9 +175,8 @@ export default function TablePage() {
 
                                     for (let i of selected) {
                                         console.log(selected)
-                                        await axios.delete(`https://shortlinkapi.onrender.com/shorten/AllData/${i._id}`);
+                                        axios.delete(`https://shortlinkapi.onrender.com/shorten/AllData/${i._id}`);
                                         // await axios.delete(`http://localhost:3001/shorten/AllData/${i._id}`);
-
                                     }
                                     let filterData = [...data];
                                     for (let i of selected) {
@@ -186,11 +185,10 @@ export default function TablePage() {
                                     for (let i of selected) {
                                         let temp = clickDetails.filter(element => element.shortURL == i.shortLinkValue);
                                         for (let j of temp) {
-                                            await axios.delete(`https://shortlinkapi.onrender.com/shorten/clicks/${j._id}`);
+                                            axios.delete(`https://shortlinkapi.onrender.com/shorten/clicks/${j._id}`);
                                             // await axios.delete(`http://localhost:3001/shorten/clicks/${j._id}`);
                                         }
                                     }
-
                                     setFilteredData(filterData)
                                     setData(filterData)
                                     setSelected([])

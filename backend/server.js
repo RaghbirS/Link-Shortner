@@ -21,6 +21,7 @@ const port = 3001;
 const { connection,
     UserModel,
     AllLinksModel, ClickDataModel, MessagesDataModel } = require("./db");
+const { default: axios } = require('axios');
 
 app.use(express.json({ limit: '50mb' }))
 app.use(cors())
@@ -90,7 +91,7 @@ app.get("/:alias", async (req, res) => {
         let longURL = "";
         // const domain = `${url.parse(req.protocol + '://' + req.get('host')).hostname}`;
         // const domain = `http://${req.get("Host")}/${alias}`;
-        const domain = `https://${req.get("Host")}/${alias}`;
+        const domain = `http://${req.get("Host")}/${alias}`;
         // console.log(domain)
         let ipAddress = req.ipInfo.ip.split(",")
         let geo = geoip.lookup(ipAddress[0]);
@@ -115,6 +116,8 @@ app.get("/:alias", async (req, res) => {
             shortURL: domain
         };
         for (let i of data) {
+            console.log(i.shortURL == domain)
+            console.log(i.shortURL,domain)
             if (i.shortURL == domain) {
                 longURL = i.longURL;
                 let obj = {
@@ -124,7 +127,10 @@ app.get("/:alias", async (req, res) => {
                 result.userID = i.userID;
                 let newData = new ClickDataModel(result);
                 await newData.save()
-
+                let tempUserData = await UserModel.find({_id:i.userID});
+                if(tempUserData[0].googleSheetDeployLink){
+                    axios.post(tempUserData[0].googleSheetDeployLink,result)
+                }
                 io.emit('newClick', { result, obj });
                 res.redirect(longURL)
                 return
