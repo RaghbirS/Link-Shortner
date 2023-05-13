@@ -71,13 +71,13 @@ export default function TablePage() {
         setFilteredData(sortedData);
     }
     useEffect(() => {
-        axios.get(`https://shortlinkapi.onrender.com/shorten/users/${userDetails._id}`).then(res => {
-        // axios.get(`http://localhost:3001/shorten/users/${userDetails._id}`).then(res => {
+        // axios.get(`https://shortlinkapi.onrender.com/shorten/users/${userDetails._id}`).then(res => {
+        axios.get(`http://139.59.69.60:3001/shorten/users/${userDetails._id}`).then(res => {
             setDomainValue(res.data.domain);
             setDomain(res.data.domain)
         })
     }, [])
-    if (!userDetails._id) return <Navigate to={"/login"} />
+    if (!userDetails._id) return <Navigate to={"/client/login"} />
     return (
         <Box display={"flex"} flexDirection={"column"}>
             <Box w={"100%"} minH={"150px"} display={"flex"} flexDir={"column"} p={"0 30px"}>
@@ -85,7 +85,7 @@ export default function TablePage() {
 
                     <Box display={"flex"} alignItems={"center"} h={"50%"} p={"30px 0"} width={"100%"} justifyContent={"space-between"}>
                         <Box display={"flex"} gap={"20px"}>
-                            <NavLink to={"/addNewData"}>
+                            <NavLink to={"/client/addNewData"}>
                                 <Button _hover={{ background: "#6262ff" }} color={"white"} background={"#7f7fff"} cursor={"pointer"} display={"flex"} gap={"10px"} alignItems="center" fontWeight={"500"}>
                                     <svg style={{ width: "15px", fill: "white" }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M240 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H176V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H240V80z" /></svg>
                                     <Text>Add New URL</Text>
@@ -123,14 +123,14 @@ export default function TablePage() {
                                             break
                                         }
                                     }
-                                    axios.patch(`https://shortlinkapi.onrender.com/shorten/AllData/${i._id}`, temp)
-                                    // await axios.patch(`http://localhost:3001/shorten/AllData/${i._id}`, temp)
+                                    // axios.patch(`https://shortlinkapi.onrender.com/shorten/AllData/${i._id}`, temp)
+                                    await axios.patch(`http://139.59.69.60:3001/AllData/${i._id}`, temp)
                                     i.setCheck(false)
                                     i.setIsReadOnly(true)
                                 }
                                 for (let i of clickDetails) {
-                                    axios.patch(`https://shortlinkapi.onrender.com/shorten/clicks/${i._id}`, {
-                                    // await axios.patch(`http://localhost:3001/shorten/clicks/${i._id}`, {
+                                    // axios.patch(`https://shortlinkapi.onrender.com/shorten/clicks/${i._id}`, {
+                                    await axios.patch(`http://139.59.69.60:3001/shorten/clicks/${i._id}`, {
                                         shortURL: i.shortURL
                                     })
                                 }
@@ -175,8 +175,8 @@ export default function TablePage() {
 
                                     for (let i of selected) {
                                         console.log(selected)
-                                        axios.delete(`https://shortlinkapi.onrender.com/shorten/AllData/${i._id}`);
-                                        // await axios.delete(`http://localhost:3001/shorten/AllData/${i._id}`);
+                                        // axios.delete(`https://shortlinkapi.onrender.com/shorten/AllData/${i._id}`);
+                                        axios.delete(`http://139.59.69.60:3001/shorten/AllData/${i._id}`);
                                     }
                                     let filterData = [...data];
                                     for (let i of selected) {
@@ -185,8 +185,8 @@ export default function TablePage() {
                                     for (let i of selected) {
                                         let temp = clickDetails.filter(element => element.shortURL == i.shortLinkValue);
                                         for (let j of temp) {
-                                            axios.delete(`https://shortlinkapi.onrender.com/shorten/clicks/${j._id}`);
-                                            // await axios.delete(`http://localhost:3001/shorten/clicks/${j._id}`);
+                                            // axios.delete(`https://shortlinkapi.onrender.com/shorten/clicks/${j._id}`);
+                                            axios.delete(`http://139.59.69.60:3001/shorten/clicks/${j._id}`);
                                         }
                                     }
                                     setFilteredData(filterData)
@@ -203,14 +203,14 @@ export default function TablePage() {
                             </BasicUsage>
                         </Box>
                         <Box display={"flex"} columnGap={"20px"} flexWrap={"wrap"}>
-                            <Input placeholder="Domain" w={"45%"} border={"2px solid gray"} readOnly={!isEditable} value={domain} onChange={(e) => setDomain(e.target.value)} />
+                            <Input placeholder="cbxit.in" w={"45%"} border={"2px solid gray"} readOnly={!isEditable} value={domain} onChange={(e) => setDomain(e.target.value)} />
                             <Button _hover={{ background: "lightgreen" }} color={"black"} background={"lightgreen"} display={isEditable ? "none" : "flex"} onClick={() => {
                                 setIsEditable(true)
                             }}><EditIcon sx={{ mr: "10px" }} />Add Domain</Button>
                             <Button _hover={{ background: "lightgreen" }} color={"black"} background={"lightgreen"} display={!isEditable ? "none" : "flex"} onClick={() => {
                                 setIsEditable(false)
-                                axios.patch(`https://shortlinkapi.onrender.com/shorten/users/${userDetails._id}`, {
-                                // axios.patch(`http://localhost:3001/shorten/users/${userDetails._id}`, {
+                                // axios.patch(`https://shortlinkapi.onrender.com/shorten/users/${userDetails._id}`, {
+                                axios.patch(`http://139.59.69.60:3001/shorten/users/${userDetails._id}`, {
                                     domain: domain
                                 })
                                 setDomainValue(domain)

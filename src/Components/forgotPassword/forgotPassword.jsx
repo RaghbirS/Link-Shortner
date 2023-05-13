@@ -22,8 +22,8 @@ export default function ForgotPassword() {
     };
     async function handleSubmit() {
         if (!password) return alert("Invalid Password")
-        await axios.patch(`https://shortlinkapi.onrender.com/shorten/users/${userData._id}`,{
-        // await axios.patch(`http://localhost:3001/shorten/users/${userData._id}`,{
+        // await axios.patch(`https://shortlinkapi.onrender.com/shorten/users/${userData._id}`,{
+        await axios.patch(`http://139.59.69.60:3001/shorten/users/${userData._id}`,{
             password
         })
         setSubmitted(true);
@@ -35,7 +35,7 @@ export default function ForgotPassword() {
             position: "top",
           })
     }
-    if(submitted) return <Navigate to={"/login"}/>
+    if(submitted) return <Navigate to={"/client/login"}/>
     return (
         <Box minHeight={"80vh"} display={"flex"} justifyContent={"center"} alignItems={"center"}>
             <Box display={"flex"} flexDirection={"column"} gap={"30px"} p={"30px"} width={["90%", "80%", "60%", "30%"]} minHeight={"100px"} boxShadow={"rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px"}>
@@ -58,8 +58,8 @@ export default function ForgotPassword() {
                                 position: "top",
                               });
                             if(isOtpVerified) return;
-                            let user = await axios.get(`https://shortlinkapi.onrender.com/shorten/users?email=${userName}`);
-                            // let user = await axios.get(`http://localhost:3001/shorten/users?email=${userName}`);
+                            // let user = await axios.get(`https://shortlinkapi.onrender.com/shorten/users?email=${userName}`);
+                            let user = await axios.get(`http://139.59.69.60:3001/shorten/users?email=${userName}`);
                             user = user.data[0];
                             if (!user) return toast({
                                 title: `User does not exist`,
@@ -78,8 +78,8 @@ export default function ForgotPassword() {
                                     return prev + 1;
                                 });
                             }, 1000)
-                            axios.post("https://shortlinkapi.onrender.com/shorten/sendOtp", { email: userName }).then(res => setVerificationOtp(res.data + ""));
-                            // axios.post("http://localhost:3001/shorten/sendOtp", { email: userName }).then(res => setVerificationOtp(res.data + ""));
+                            // axios.post("https://shortlinkapi.onrender.com/shorten/sendOtp", { email: userName }).then(res => setVerificationOtp(res.data + ""));
+                            axios.post("http://139.59.69.60:3001/shorten/sendOtp", { email: userName }).then(res => setVerificationOtp(res.data + ""));
 
                         }}>{otpTimeout || "Send OTP"}</Button>
                 </Box>

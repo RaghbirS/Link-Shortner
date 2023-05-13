@@ -22,11 +22,17 @@ export default function LoginPage() {
   const [showError, setShowError] = useState(false)
   async function login() {
     setShowError(true)
-    let data = await axios.get("https://shortlinkapi.onrender.com/shorten/users");
-    // let data = await axios.get("http://localhost:3001/shorten/users");
+    // let data = await axios.get("https://shortlinkapi.onrender.com/shorten/users");
+    let data = await axios.get("http://139.59.69.60:3001/shorten/users");
     data = data.data;
     for (let i of data) {
-      if (i.email === email && i.password === password) {
+      if (i.email === email) {
+        if (i.password != password) return toast({
+          title: `Incorrect Password`,
+          status: "error",
+          isClosable: true,
+          position: "top",
+        })
         let userDatails = {
           email,
           _id: i._id
@@ -49,7 +55,7 @@ export default function LoginPage() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
-  if (userDetails._id) return <Navigate to={"/links"} />
+  if (userDetails._id) return <Navigate to={"/client/links"} />
   return (
     <Flex
       minH={'80vh'}
@@ -78,8 +84,8 @@ export default function LoginPage() {
                 direction={{ base: 'column', sm: 'row' }}
                 align={'start'}
                 justify={'space-between'}>
-                <NavLink style={{ textDecoration: "underline" }} to={"/forgotPassword"}>Forgot Password</NavLink>
-                <NavLink style={{ textDecoration: "underline" }} to={"/adminLogin"}>Admin Login</NavLink>
+                <NavLink style={{ textDecoration: "underline" }} to={"/client/forgotPassword"}>Forgot Password</NavLink>
+                <NavLink style={{ textDecoration: "underline" }} to={"/client/adminLogin"}>Admin Login</NavLink>
               </Stack>
               <Button
                 onClick={login}

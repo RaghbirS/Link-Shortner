@@ -124,8 +124,8 @@ export default function TableRows({ data, userDataArr, setData, toast, showDate,
             <Input color={!isReadOnly ? "white" : "black"} background={!isReadOnly ? "#888888" : "none"} flexShrink={0} w={"10%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={isReadOnly} onChange={(e) => {
                 setAliasValue(e.target.value)
                 if (!domainValue) {
-                    setShortLinkValue(`https://shortlinkapi.onrender.com/${e.target.value}`)
-                    // setShortLinkValue(`http://localhost:3001/${e.target.value}`)
+                    // setShortLinkValue(`https://shortlinkapi.onrender.com/${e.target.value}`)
+                    setShortLinkValue(`http://139.59.69.60:3001/${e.target.value}`)
                 }
                 else {
                     setShortLinkValue(`http://${domainValue}.in/${e.target.value}`)
@@ -156,8 +156,8 @@ export default function TableRows({ data, userDataArr, setData, toast, showDate,
                     window.open(`https://api.whatsapp.com/send?phone=&text=${shortLinkValue}`, "_black")
                 }} />
                 <CustomIconStar bg={favourite ? "yellow" : "black"} onClick={async () => {
-                    await axios.patch(`https://shortlinkapi.onrender.com/shorten/Alldata/${_id}`, {
-                        // await axios.patch(`http://localhost:3001/shorten/Alldata/${_id}`,{
+                    // await axios.patch(`https://shortlinkapi.onrender.com/shorten/Alldata/${_id}`, {
+                    await axios.patch(`http://139.59.69.60:3001/shorten/Alldata/${_id}`, {
                         favourite: !favourite
                     })
                     let temp = [...userDataArr]
@@ -175,7 +175,7 @@ export default function TableRows({ data, userDataArr, setData, toast, showDate,
                 <ModalContent sx={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100vw" }}>
                     <Box w={"950px"} minH={"70vh"} bg={"white"} overflowY={"scroll"} display={"flex"} flexDirection={"column"}>
                         <Box h={"50px"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} p={"40px"}>
-                            <NavLink to={"/map"}><Button onClick={() => {
+                            <NavLink to={"/client/map"}><Button onClick={() => {
                                 let temp = clickDetails.filter(i => i.shortURL == shortLinkValue)
                                 setMapData(temp)
                                 console.log(temp)
@@ -183,14 +183,17 @@ export default function TableRows({ data, userDataArr, setData, toast, showDate,
                             <Box display={"flex"} gap={"10px"} alignItems={"center"}>
                                 <Text>Google Sheets</Text>
                                 <Input readOnly={!isGoogleSheetEditable} ref={deployLinkRef} w={"200px"} defaultValue={googleSheetDeployLink} />
-                                <Button display={!isGoogleSheetEditable?"flex":"none"} onClick={() => {setIsGoogleSheetEditable(true) }}>Edit</Button>
-                                <Button display={isGoogleSheetEditable?"flex":"none"} onClick={() => {
+                                <Button display={!isGoogleSheetEditable ? "flex" : "none"} onClick={() => { setIsGoogleSheetEditable(true) }}>Edit</Button>
+                                <Button display={isGoogleSheetEditable ? "flex" : "none"} onClick={() => {
                                     setIsGoogleSheetEditable(false)
-                                    axios.patch(`https://shortlinkapi.onrender.com/shorten/users/${userDetails._id}`,{
-                                        googleSheetDeployLink:deployLinkRef.current.value
-                                    })
+                                    axios.patch(`http://139.59.69.60:3001/shorten/users/${userDetails._id}`, {
+                                        googleSheetDeployLink: deployLinkRef.current.value
+                                    }).then(r=>console.log(r))
+                                    // axios.patch(`https://shortlinkapi.onrender.com/shorten/users/${userDetails._id}`,{
+                                    //     googleSheetDeployLink:deployLinkRef.current.value
+                                    // })
                                     setGoogleSheetDeployLink(deployLinkRef.current.value)
-                                 }}>Save</Button>
+                                }}>Save</Button>
                             </Box>
                         </Box>
                         <Box h={"50px"} display={"flex"} background={"#edf2fa"}>

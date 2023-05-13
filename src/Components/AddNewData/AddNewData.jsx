@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
-import { NavLink, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { uid } from 'uid';
 import { Context } from '../../context';
 
@@ -20,10 +20,10 @@ export default function AddNewData() {
   const [remarks, setRemarks] = useState("")
   const [shortLink, setShortLink] = useState("")
   const { data, setData, newDataAdded, userDetails, setNewDataAdded, filteredData, setFilteredData, domainValue, toast,
-    shortLimit,setShortLimit } = useContext(Context);
+    shortLimit, setShortLimit } = useContext(Context);
 
   async function handleSubmit() {
-    if(data.length>shortLimit){
+    if (data.length > shortLimit) {
       return toast({
         title: `Free Limit reached !`,
         status: "error",
@@ -40,7 +40,7 @@ export default function AddNewData() {
       })
     }
     let obj = {
-      _id:uid(24),
+      _id: uid(24),
       longURL: longURL,
       alias: alias,
       shortURL: shortLink,
@@ -48,16 +48,16 @@ export default function AddNewData() {
       clicks: 0,
       domain: domainValue || "ceoitbox",
       userID: userDetails._id,
-      favourite:false,
-      dateCreated:new Date()
+      favourite: false,
+      dateCreated: new Date()
     }
     if (alias.length === 0) {
-      let temp = uid().slice(0,5);
+      let temp = uid().slice(0, 5);
       obj.alias = temp;
       obj.shortURL = obj.shortURL + temp;
     }
-    let tempAllData = await axios.get(`https://shortlinkapi.onrender.com/shorten/AllData`);
-    // let tempAllData = await axios.get(`http://localhost:3001/shorten/AllData`);
+    // let tempAllData = await axios.get(`https://shortlinkapi.onrender.com/shorten/AllData`);
+    let tempAllData = await axios.get(`http://139.59.69.60:3001/shorten/AllData`);
     tempAllData = tempAllData.data;
     for (let i of tempAllData) {
       if (i.shortURL == shortLink) {
@@ -70,9 +70,9 @@ export default function AddNewData() {
       }
     }
 
-    axios.post(`https://shortlinkapi.onrender.com/shorten/AllData`, obj)
-    // axios.post(`http://localhost:3001/shorten/AllData`, obj)
-    let tempData = [...data, obj].sort((a,b)=>Number(b.favourite)-Number(a.favourite))
+    // axios.post(`https://shortlinkapi.onrender.com/shorten/AllData`, obj)
+    axios.post(`http://139.59.69.60:3001/shorten/AllData`, obj)
+    let tempData = [...data, obj].sort((a, b) => Number(b.favourite) - Number(a.favourite))
     setData(tempData)
     setFilteredData(tempData)
     console.log(tempData)
@@ -83,17 +83,16 @@ export default function AddNewData() {
   }
   useEffect(() => {
     if (!domainValue) {
-      setShortLink(`https://shortlinkapi.onrender.com/${alias}`)
-      // setShortLink(`http://localhost:3001/${alias}`)
+      // setShortLink(`https://shortlinkapi.onrender.com/${alias}`)
+      setShortLink(`http://139.59.69.60:3001/${alias}`)
     }
     else {
-      setShortLink(`http://${domainValue}.in/${alias}`)
+      setShortLink(`http://${domainValue}/${alias}`)
     }
     if (longURL == "" || longURL == "http:/" || longURL == "http:" ||
       longURL == "http" || longURL == "htt" || longURL == "ht" || longURL == "h" || longURL == "h") setLongURL("http://")
   })
-  if (newDataAdded) return <Navigate to={"/links"} />
-  console.log()
+  if (newDataAdded) return <Navigate to={"/client/links"} />
   return (
     <Flex
       minH={'80vh'}
@@ -102,7 +101,7 @@ export default function AddNewData() {
     >
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'center'}>
-          <Heading fontSize={'4xl'}>New Link</Heading>
+          <Heading fontSize={'4xl'}>New URL</Heading>
         </Stack>
         <Box
           rounded={'lg'}

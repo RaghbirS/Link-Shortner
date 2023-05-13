@@ -30,8 +30,10 @@ const Contact = () => {
             isClosable: true,
             position: "top",
         })
-        axios.post("https://shortlinkapi.onrender.com/shorten/send/email", senderDetails);
-        axios.post("https://shortlinkapi.onrender.com/shorten/messages", senderDetails);
+        axios.post("http://localhost:3001/shorten/send/email", senderDetails);
+        axios.post("http://localhost:3001/shorten/messages", senderDetails);
+        // axios.post("https://shortlinkapi.onrender.com/shorten/send/email", senderDetails);
+        // axios.post("https://shortlinkapi.onrender.com/shorten/messages", senderDetails);
         setSenderDetails({ name: '', email: '', message: '' })
     }
     return (

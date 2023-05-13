@@ -1,4 +1,4 @@
-import { ChakraProvider } from "@chakra-ui/react";
+import { Box, Button, ChakraProvider } from "@chakra-ui/react";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom"
@@ -16,28 +16,28 @@ import AdminPage from "./Components/AdminPage/AdminTablePage";
 import HomePage from "./Components/HomePage/HomePage";
 function App() {
   const { data, setData, isLogin, userDetails, setFilteredData, toast, newDataAdded, filteredData,
-     clickDetails, setShortLimit, setclickDetails, isAdminLogin, setisAdminLogin,
-     googleSheetDeployLink,setGoogleSheetDeployLink } = useContext(Context);
+    clickDetails, setShortLimit, setclickDetails, isAdminLogin, setisAdminLogin,
+    googleSheetDeployLink, setGoogleSheetDeployLink } = useContext(Context);
   const [count, setCount] = useState(1);
   useEffect(() => {
     if (!userDetails._id) return;
-    
+
     (async () => {
-      let response = await axios.get("https://shortlinkapi.onrender.com/shorten/licenceCheck", {
-      // let response = await axios.get("http://localhost:3001/shorten/licenceCheck", {
+      // let response = await axios.get("https://shortlinkapi.onrender.com/shorten/licenceCheck", {
+      let response = await axios.get("http://139.59.69.60:3001/shorten/licenceCheck", {
         email: userDetails.email
       });
       response = response.data;
       setShortLimit(response.limit)
     })()
-    axios.get(`https://shortlinkapi.onrender.com/shorten/AllData?userID=${userDetails._id}`).then(res => {
-    // axios.get(`http://localhost:3001/shorten/AllData?userID=${userDetails._id}`).then(res => {
+    // axios.get(`https://shortlinkapi.onrender.com/shorten/AllData?userID=${userDetails._id}`).then(res => {
+    axios.get(`http://139.59.69.60:3001/shorten/AllData?userID=${userDetails._id}`).then(res => {
       let sortedTempData = res.data.sort((a, b) => Number(b.favourite) - Number(a.favourite))
       setData(sortedTempData)
       setFilteredData(sortedTempData)
     })
-    axios.get(`https://shortlinkapi.onrender.com/shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
-    // axios.get(`http://localhost:3001/shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
+    // axios.get(`https://shortlinkapi.onrender.com/shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
+    axios.get(`http://139.59.69.60:3001/shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
       setclickDetails(data)
     })
   }, [userDetails._id])
@@ -64,11 +64,12 @@ function App() {
       })
     }
   }, [userDetails._id]);
-  useEffect(()=>{
-    axios.get(`https://shortlinkapi.onrender.com/shorten/users/${userDetails._id}`).then(res=>{
+  useEffect(() => {
+    axios.get(`http://139.59.69.60:3001/shorten/users/${userDetails._id}`).then(res => {
+      console.log(res.data.googleSheetDeployLink)
       setGoogleSheetDeployLink(res.data.googleSheetDeployLink || "")
     })
-  },[])
+  }, [])
 
   useEffect(() => {
     if (count == 1) {
@@ -88,8 +89,8 @@ function App() {
 
   useEffect(() => {
     if (!userDetails._id) return;
-    // const socket = io('http://localhost:3001');
-    const socket = io('https://shortlinkapi.onrender.com');
+    const socket = io('http://139.59.69.60:3001/');
+    // const socket = io('https://shortlinkapi.onrender.com');
     console.log("render")
     socket.on("newClick", res => {
       let tempData = [...data];
@@ -115,19 +116,18 @@ function App() {
 
   return (
     <div className="App">
-
       <NavBar />
-
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/links" element={<TablePage />} />
-        <Route path="/map" element={<Map />} />
-        <Route path="/addNewData" element={<AddNewData />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/adminLogin" element={<AdminLogin />} />
-        <Route path="/adminPage" element={<AdminPage />} />
-        <Route path="/forgotPassword" element={<ForgotPassword />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/client/links" element={<TablePage />} />
+        <Route path="/client/map" element={<Map />} />
+        <Route path="/client/addNewData" element={<AddNewData />} />
+        <Route path="/client/login" element={<LoginPage />} />
+        <Route path="/client/adminLogin" element={<AdminLogin />} />
+        <Route path="/client/adminPage" element={<AdminPage />} />
+        <Route path="/client/forgotPassword" element={<ForgotPassword />} />
+        <Route path="/client/register" element={<RegisterPage />} />
+
       </Routes>
     </div>
   );

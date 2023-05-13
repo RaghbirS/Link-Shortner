@@ -17,8 +17,8 @@ export default function AdminLogin() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   async function login() {
-    let { data } = await axios.get("https://shortlinkapi.onrender.com/shorten/users")
-    // let { data } = await axios.get("http://localhost:3001/shorten/users")
+    // let { data } = await axios.get("https://shortlinkapi.onrender.com/shorten/users")
+    let { data } = await axios.get("http://139.59.69.60:3001/shorten/users")
     for (let i of data) {
       if (i.email === email && i.password === password) {
         if (i.isAdmin) {
@@ -39,7 +39,7 @@ export default function AdminLogin() {
     return emailRegex.test(email);
   }
   if (userDetails._id) return <Navigate to={"/"} />
-  if (isAdminLogin) return <Navigate to={"/adminPage"} />
+  if (isAdminLogin) return <Navigate to={"/client/adminPage"} />
 
   return (
     <Flex

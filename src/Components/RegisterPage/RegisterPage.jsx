@@ -66,8 +66,8 @@ export default function RegisterPage() {
       password,
       domain:""
     }
-    axios.post("https://shortlinkapi.onrender.com/shorten/users", obj);
-    // axios.post("http://localhost:3001/shorten/users", obj);
+    // axios.post("https://shortlinkapi.onrender.com/shorten/users", obj);
+    axios.post("http://139.59.69.60:3001/shorten/users", obj);
     setFirstName("")
     setLastName("")
     setEmail("")
@@ -83,7 +83,7 @@ export default function RegisterPage() {
     if (otpTimeout == 0 || isOtpVerified) return "Send OTP"
     else return (otpTimeout - 60) * -1
   }
-  if (submited) return <Navigate to={"/login"} />
+  if (submited) return <Navigate to={"/client/login"} />
   return (
     <Flex
       minH={'80vh'}
@@ -116,8 +116,8 @@ export default function RegisterPage() {
                     isClosable: true,
                     position: "top",
                   })
-                  let { data } = await axios.get(`https://shortlinkapi.onrender.com/shorten/users?email=${email}`);
-                  // let { data } = await axios.get(`http://localhost:3001/shorten/users?email=${email}`);
+                  // let { data } = await axios.get(`https://shortlinkapi.onrender.com/shorten/users?email=${email}`);
+                  let { data } = await axios.get(`http://139.59.69.60:3001/shorten/users?email=${email}`);
                   if (data.length == 1) {
                     return toast({
                       title: `User already exist`,
@@ -137,8 +137,8 @@ export default function RegisterPage() {
                     });
                   }, 1000)
 
-                  axios.post("https://shortlinkapi.onrender.com/shorten/sendOtp", { email }).then(res => setVerificationOtp(res.data + ""));
-                  // axios.post("http://localhost:3001/shorten/sendOtp", { email }).then(res => setVerificationOtp(res.data + ""));
+                  // axios.post("https://shortlinkapi.onrender.com/shorten/sendOtp", { email }).then(res => setVerificationOtp(res.data + ""));
+                  axios.post("http://139.59.69.60:3001/shorten/sendOtp", { email }).then(res => setVerificationOtp(res.data + ""));
                   toast({
                     title: `OTP sent`,
                     status: "success",
@@ -226,7 +226,7 @@ export default function RegisterPage() {
             </Stack>
             <Stack pt={6}>
               <Text align={'center'}>
-                Already a user? <NavLink to={"/login"} color={'blue.400'}>Login</NavLink>
+                Already a user? <NavLink to={"/client/login"} color={'blue.400'}>Login</NavLink>
               </Text>
             </Stack>
           </Stack>

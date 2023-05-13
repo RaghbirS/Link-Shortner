@@ -87,12 +87,12 @@ export default function TableRows({ data, userDataArr, toast
     }, [firstNameValue, lastNameValue, emailValue, passwordValue, domainValue, isAdminValue])
 
     useEffect(() => {
-        axios.get("https://shortlinkapi.onrender.com/shorten/licenceCheck/", {
-        // axios.get("http://localhost:3001/shorten/licenceCheck/", {
+        // axios.get("https://shortlinkapi.onrender.com/shorten/licenceCheck/", {
+        axios.get("http://139.59.69.60:3001/shorten/licenceCheck/", {
             email
         }).then(res => setTotalCredits(res.data.limit))
-        axios.get("https://shortlinkapi.onrender.com/shorten/AllData/", {
-        // axios.get("http://localhost:3001/shorten/AllData/", {
+        // axios.get("https://shortlinkapi.onrender.com/shorten/AllData/", {
+        axios.get("http://139.59.69.60:3001/shorten/AllData/", {
             email
         }).then(res => setUsedCredits((res.data.filter(i => i.userID == _id).length)))
     }, [])

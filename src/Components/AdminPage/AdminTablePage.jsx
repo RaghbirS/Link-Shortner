@@ -20,13 +20,13 @@ export default function TablePage() {
     const [domain, setDomain] = useState(domainValue);
 
     useEffect(() => {
-        axios.get(`https://shortlinkapi.onrender.com/shorten/users`).then(res => {
-        // axios.get(`http://localhost:3001/shorten/users`).then(res => {
+        // axios.get(`https://shortlinkapi.onrender.com/shorten/users`).then(res => {
+        axios.get(`http://139.59.69.60:3001/shorten/users`).then(res => {
             setAllUsersData(res.data);
             setAllUsersFilteredData(res.data)
         })
     }, [])
-    if (!isAdminLogin) return <Navigate to={"/login"} />
+    if (!isAdminLogin) return <Navigate to={"/client/login"} />
     return (
         <Box display={"flex"} flexDirection={"column"}>
             <Box w={"100%"} h={"150px"} display={"flex"} flexDir={"column"} p={"0 30px"}>
@@ -73,8 +73,8 @@ export default function TablePage() {
                                         }
                                     }
                                     console.log(temp)
-                                    await axios.patch(`https://shortlinkapi.onrender.com/shorten/users/${i._id}`, temp)
-                                    // await axios.patch(`http://localhost:3001/shorten/users/${i._id}`, temp)
+                                    // await axios.patch(`https://shortlinkapi.onrender.com/shorten/users/${i._id}`, temp)
+                                    await axios.patch(`http://139.59.69.60:3001/shorten/users/${i._id}`, temp)
                                     i.setCheck(false)
                                     i.setIsReadOnly(true)
                                 }
@@ -119,20 +119,20 @@ export default function TablePage() {
                                     let filterData = [...allUsersData]
                                     for (let i of selected) {
                                         filterData = filterData.filter(element => element._id != i._id)
-                                        await axios.delete(`https://shortlinkapi.onrender.com/shorten/users/${i._id}`);
-                                        // await axios.delete(`http://localhost:3001/shorten/users/${i._id}`);
-                                        let { data: userLinks } = await axios.get(`https://shortlinkapi.onrender.com/shorten/AllData?userID=${i._id}`);
-                                        // let { data: userLinks } = await axios.get(`http://localhost:3001/shorten/AllData?userID=${i._id}`);
+                                        // await axios.delete(`https://shortlinkapi.onrender.com/shorten/users/${i._id}`);
+                                        await axios.delete(`http://139.59.69.60:3001/shorten/users/${i._id}`);
+                                        // let { data: userLinks } = await axios.get(`https://shortlinkapi.onrender.com/shorten/AllData?userID=${i._id}`);
+                                        let { data: userLinks } = await axios.get(`http://139.59.69.60:3001/shorten/AllData?userID=${i._id}`);
                                         for (let links of userLinks) {
-                                            let { data: clicksTempData } = await axios.get(`https://shortlinkapi.onrender.com/shorten/clicks?userID=${i._id}`);
-                                            // let { data: clicksTempData } = await axios.get(`http://localhost:3001/shorten/clicks?userID=${i._id}`);
+                                            // let { data: clicksTempData } = await axios.get(`https://shortlinkapi.onrender.com/shorten/clicks?userID=${i._id}`);
+                                            let { data: clicksTempData } = await axios.get(`http://139.59.69.60:3001/shorten/clicks?userID=${i._id}`);
                                             for (let clicksData of clicksTempData) {
                                                 
-                                                await axios.delete(`https://shortlinkapi.onrender.com/shorten/clicks/${clicksData._id}`)
-                                                // await axios.delete(`http://localhost:3001/shorten/clicks/${clicksData._id}`)
+                                                // await axios.delete(`https://shortlinkapi.onrender.com/shorten/clicks/${clicksData._id}`)
+                                                await axios.delete(`http://139.59.69.60:3001/shorten/clicks/${clicksData._id}`)
                                             }
-                                            await axios.delete(`https://shortlinkapi.onrender.com/shorten/AllData/${links._id}`);
-                                            // await axios.delete(`http://localhost:3001/shorten/AllData/${links._id}`);
+                                            // await axios.delete(`https://shortlinkapi.onrender.com/shorten/AllData/${links._id}`);
+                                            await axios.delete(`http://139.59.69.60:3001/shorten/AllData/${links._id}`);
                                         }
                                     }
                                     setAllUsersFilteredData(filterData)

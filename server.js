@@ -84,14 +84,17 @@ app.post("/shortenLink/:id", async (req, res) => {
 
 
 
-app.get("/",(req, res)=>{
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "build", "index.html"));
+})
+app.get("/client/:route", (req, res) => {
     res.sendFile(path.join(__dirname, "build", "index.html"));
 })
 
 app.get("/:alias", async (req, res) => {
     const alias = req.params.alias;
     try {
-        
+
         const data = await AllLinksModel.find();
         let longURL = "";
         // const domain = `${url.parse(req.protocol + '://' + req.get('host')).hostname}`;
@@ -122,7 +125,7 @@ app.get("/:alias", async (req, res) => {
         };
         for (let i of data) {
             console.log(i.shortURL == domain)
-            console.log(i.shortURL,domain)
+            console.log(i.shortURL, domain)
             if (i.shortURL == domain) {
                 longURL = i.longURL;
                 let obj = {
@@ -132,21 +135,23 @@ app.get("/:alias", async (req, res) => {
                 result.userID = i.userID;
                 let newData = new ClickDataModel(result);
                 await newData.save()
-                let tempUserData = await UserModel.find({_id:i.userID});
+                let tempUserData = await UserModel.find({ _id: i.userID });
                 console.log(result)
                 const form_ = new FormData();
-                form_.append("country", result.country) ;
-                form_.append("city", result.city) ;
-                form_.append("latitude", result.latitude) ;
-                form_.append("logitude",result.longitude ) ;
-                form_.append("os_name", result.os) ;
-                form_.append("browser", result.browser) ;
-                form_.append("shortURL", result.shortURL) ;
-                form_.append("userID", result.userID) ;
+                form_.append("country", result.country);
+                form_.append("city", result.city);
+                form_.append("latitude", result.latitude);
+                form_.append("logitude", result.longitude);
+                form_.append("os_name", result.os);
+                form_.append("browser", result.browser);
+                form_.append("shortURL", result.shortURL);
+                form_.append("userID", result.userID);
 
-                if(tempUserData[0].googleSheetDeployLink){
-                    axios.post(tempUserData[0].googleSheetDeployLink,form_)
+                if (tempUserData[0].googleSheetDeployLink) {
+                    axios.post(tempUserData[0].googleSheetDeployLink, form_)
                 }
+                console.log(tempUserData[0])
+
                 io.emit('newClick', { result, obj });
                 res.redirect(longURL)
                 return
@@ -186,7 +191,7 @@ app.post("/shorten/users", async (req, res) => {
     try {
         const data = req.body;
         const database = new UserModel(data);
-        
+
         console.log(await database.save())
         res.send(data)
     }

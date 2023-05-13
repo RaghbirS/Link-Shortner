@@ -22,7 +22,7 @@ const NavBar = () => {
     console.log();
     const { isOpen, onOpen, onClose } = useDisclosure()
     const btnRef = useRef()
-    const { isLogin, setIsLogin, setUserDetails, userDetails, isAdminLogin, setisAdminLogin } = useContext(Context);
+    const { setUserDetails, userDetails, isAdminLogin, setisAdminLogin } = useContext(Context);
     let contact;
     useEffect(()=>{
         contact = document.getElementById("contact");
@@ -51,8 +51,8 @@ const NavBar = () => {
                         <NavLink onClick={() => onClose()} className={s.navHoverStyle} to={"/"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id || isAdminLogin ? "none" : "flex" }}>HOME</NavLink>
                         <NavLink onClick={() => onClose()} className={s.navHoverStyle} to={"//www.tnsit.in/"} target='_blank' style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id || isAdminLogin ? "none" : "flex" }}>DOMAIN</NavLink>
                         <NavLink onClick={() => onClose()} className={s.navHoverStyle} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: !(validPaths.includes(location.pathname)) ? "none" : userDetails._id || isAdminLogin ? "none" : "flex" }}>CONTACT</NavLink>
-                        <NavLink onClick={() => onClose()} className={s.navHoverStyle} to={"/login"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id || isAdminLogin ? "none" : "flex" }}>LOGIN</NavLink>
-                        <NavLink onClick={() => onClose()} className={s.navHoverStyle} to={"/register"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id || isAdminLogin ? "none" : "flex" }}>REGISTER</NavLink>
+                        <NavLink onClick={() => onClose()} className={s.navHoverStyle} to={"/client/login"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id || isAdminLogin ? "none" : "flex" }}>LOGIN</NavLink>
+                        <NavLink onClick={() => onClose()} className={s.navHoverStyle} to={"/client/register"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id || isAdminLogin ? "none" : "flex" }}>REGISTER</NavLink>
                     </DrawerBody>
                 </DrawerContent>
             </Drawer>
@@ -65,8 +65,9 @@ const NavBar = () => {
                             behavior: "smooth"
                         })
                     }}>CONTACT</NavLink>
-                    <NavLink className={s.navHoverStyle} to={"/login"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id || isAdminLogin ? "none" : "flex" }}>LOGIN</NavLink>
-                    <NavLink className={s.navHoverStyle} to={"/register"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id || isAdminLogin ? "none" : "flex" }}>REGISTER</NavLink>
+                    <NavLink className={s.navHoverStyle} to={"/client/login"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id || isAdminLogin ? "none" : "flex" }}>LOGIN</NavLink>
+                    <NavLink className={s.navHoverStyle} to={"/client/register"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id || isAdminLogin ? "none" : "flex" }}>REGISTER</NavLink>
+                    <NavLink className={s.navHoverStyle} to={"/client/links"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id ? "flex" : "none" }}>Links</NavLink>
                     <Button display={!userDetails._id ? "none" : "flex"} onClick={() => {
                         setUserDetails({})
                         Cookies.set('user', JSON.stringify({}));
