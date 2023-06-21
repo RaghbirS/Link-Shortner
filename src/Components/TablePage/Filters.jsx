@@ -12,7 +12,8 @@ function isUnderDate(values, checkDate) {
 }
 
 export default function Filters() {
-    const { data, setFilteredData } = useContext(Context);
+    const { data, setFilteredData,dataLimit, setDataLimit,
+        page, setPage } = useContext(Context);
     const [searchLongURL, setSearchLongURL] = useState("")
     const [searchAlias, setSearchAlias] = useState("")
     const [searchShortURL, setsearchShortURL] = useState("")
@@ -22,29 +23,47 @@ export default function Filters() {
     useEffect(() => {
         let temp = [];
         for (let i of data) {
-            isUnderDate(sliderValues, new Date(i.dateCreated))
             if (isUnderDate(sliderValues, new Date(i.dateCreated)) && i.longURL.includes(searchLongURL) && i.alias.includes(searchAlias) && i.shortURL.includes(searchShortURL) && i.remarks.includes(searchRemarks)) {
                 temp.push(i)
             }
         }
-        setFilteredData(temp)
-    }, [searchLongURL, searchAlias, searchShortURL, searchRemarks, sliderValues, setFilteredData])
+        // ${(page*dataLimit)-dataLimit+1}
+        let paginatedData = [];
+
+        for (let i = page*dataLimit-dataLimit; i <= page*dataLimit-1; i++) {
+            if(!temp[i]) break;
+            paginatedData.push(temp[i])
+        }
+        setFilteredData(paginatedData)
+    }, [searchLongURL, searchAlias, searchShortURL, searchRemarks, sliderValues, setFilteredData,page,dataLimit,data])
     return (
         <Box h={"100%"} w={"100%"} display={"flex"} flexDir={"column"} gap={"10px"}>
             <Box width={"100%"} minHeight={"50%"} display={"flex"} columnGap={"5px"} flexWrap={"wrap"} alignItems={"center"}>
                 <Input placeholder="Unique ID" onChange={() => { }} w={"300px"} value={userDetails._id} />
-                <Input value={searchLongURL} onChange={e => setSearchLongURL(e.target.value)} w={"250"} placeholder={"Search Long URL"} />
-                <Input value={searchAlias} onChange={e => setSearchAlias(e.target.value)} w={"250"} placeholder={"Search Alias"} />
-                <Input value={searchShortURL} onChange={e => setsearchShortURL(e.target.value)} w={"250"} placeholder={"Search Short URL"} />
-                <Input value={searchRemarks} onChange={e => setSearchRemarks(e.target.value)} w={"300"} placeholder={"Search Remarks"} />
-                <DateRangeSlider sliderValues={sliderValues} setSliderValues={setSliderValues} />
-                <Button onClick={() => {
+                <Button sx={{margin:"0 20px"}} onClick={() => {
                     setSearchLongURL("");
                     setSearchAlias("")
                     setsearchShortURL("")
                     setSearchRemarks("")
                     setSliderValues([new Date('2022.01.01').getTime() / 1000, new Date().getTime() / 1000])
                 }}>Reset</Button>
+                <Input value={searchLongURL} onChange={e => {
+                    setPage(1)
+                    setSearchLongURL(e.target.value)
+                }} w={"250"} placeholder={"Search Long URL"} />
+                <Input value={searchAlias} onChange={e => {
+                    setPage(1)
+                    setSearchAlias(e.target.value)
+                }} w={"250"} placeholder={"Search Alias"} />
+                <Input value={searchShortURL} onChange={e => {
+                    setPage(1)
+                    setsearchShortURL(e.target.value)
+                }} w={"250"} placeholder={"Search Short URL"} />
+                <Input value={searchRemarks} onChange={e => {
+                    setPage(1)
+                    setSearchRemarks(e.target.value)
+                }} w={"300"} placeholder={"Search Remarks"} />
+                <DateRangeSlider sliderValues={sliderValues} setSliderValues={setSliderValues} />
             </Box>
         </Box>
     )

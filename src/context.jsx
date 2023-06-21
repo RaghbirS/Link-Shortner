@@ -2,9 +2,15 @@ import { useToast } from "@chakra-ui/react";
 import { createContext, useState } from "react";
 import Cookies from 'js-cookie';
 import { io } from "socket.io-client";
-
 export let Context = createContext();
+let apiLink = "http://localhost:3001/";
+if (document.location.href.includes("localhost")) {
+  apiLink = "http://localhost:3001/";
+} else {
+  apiLink = "http://139.59.69.60:3001/";
+}
 
+const socket = io(apiLink);
 export default function ContextProvider({ children }) {
     let user = Cookies.get('user');
     if(user) user = JSON.parse(user)
@@ -28,13 +34,8 @@ export default function ContextProvider({ children }) {
     const [allUsersFilteredData,setAllUsersFilteredData] = useState([])
     const [googleSheetDeployLink,setGoogleSheetDeployLink] = useState("")
     const toast = useToast()
-    let apiLink = "http://localhost:3001/";
-    if (document.location.href.includes("localhost")) {
-      apiLink = "http://localhost:3001/";
-    } else {
-      apiLink = "http://139.59.69.60:3001/";
-    }
-    const socket = io(apiLink);
+    const [dataLimit, setDataLimit] = useState(10);
+    const [page, setPage] = useState(1);
     return (
         <Context.Provider
             value={{
@@ -57,7 +58,9 @@ export default function ContextProvider({ children }) {
                 allUsersData,setAllUsersData,
                 allUsersFilteredData,setAllUsersFilteredData,
                 googleSheetDeployLink,setGoogleSheetDeployLink,
-                apiLink,socket
+                apiLink,socket,
+                dataLimit, setDataLimit,
+                page, setPage
             }}>
             {children}
         </Context.Provider>

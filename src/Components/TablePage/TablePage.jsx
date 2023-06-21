@@ -1,4 +1,4 @@
-import { Box, Button, Text } from "@chakra-ui/react";
+import { Box, Button, Select, Text } from "@chakra-ui/react";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { Navigate, NavLink } from "react-router-dom";
@@ -14,10 +14,12 @@ import { EditIcon } from "@chakra-ui/icons";
 export default function TablePage() {
     const { data, setData, userDetails, selected, setSelected, filteredData, setFilteredData, editing, setEditing, toast
         , domainValue, setDomainValue, clickDetails,
-        shortLimit, apiLink
+        shortLimit, apiLink, dataLimit, setDataLimit,
+        page, setPage
     } = useContext(Context);
     const [isEditable, setIsEditable] = useState(false);
     const [domain, setDomain] = useState(domainValue);
+
     function sortAsc(param) {
         const temp = [...data]
         const sortedData = [...temp].sort((a, b) => {
@@ -75,7 +77,7 @@ export default function TablePage() {
             setDomainValue(res.data.domain);
             setDomain(res.data.domain)
         })
-    }, [apiLink,setDomainValue,userDetails._id])
+    }, [apiLink, setDomainValue, userDetails._id])
     if (!userDetails._id) return <Navigate to={"/client/login"} />
     return (
         <Box display={"flex"} flexDirection={"column"}>
@@ -198,13 +200,12 @@ export default function TablePage() {
                             </BasicUsage>
                         </Box>
                         <Box display={"flex"} columnGap={"20px"} flexWrap={"wrap"}>
-                            <Input placeholder="Custom Domain" w={"45%"} border={"2px solid gray"} readOnly={!isEditable} value={domain} onChange={(e) => setDomain(e.target.value)} />
+                            <Input placeholder="" w={"45%"} border={"2px solid gray"} readOnly={!isEditable} value={domain} onChange={(e) => setDomain(e.target.value)} />
                             <Button _hover={{ background: "lightgreen" }} color={"black"} background={"lightgreen"} display={isEditable ? "none" : "flex"} onClick={() => {
                                 setIsEditable(true)
                             }}><EditIcon sx={{ mr: "10px" }} />Add Domain</Button>
                             <Button _hover={{ background: "lightgreen" }} color={"black"} background={"lightgreen"} display={!isEditable ? "none" : "flex"} onClick={() => {
                                 setIsEditable(false)
-                                // axios.patch(`https://shortlinkapi.onrender.com/shorten/users/${userDetails._id}`, {
                                 axios.patch(`${apiLink}shorten/users/${userDetails._id}`, {
                                     domain: domain
                                 })
@@ -213,6 +214,7 @@ export default function TablePage() {
                         </Box>
                     </Box>
                 </ChakraProvider>
+                <Text sx={{ ml: "20px", mb: "10px", textAlign: "center", fontWeight: "bold" }}>{data.length} Links out of {shortLimit}</Text>
                 <ChakraProvider>
                     <Box minH={"50%"} w={"100%"} display={"flex"} justifyContent={"space-between"}>
                         <Filters />
@@ -220,8 +222,33 @@ export default function TablePage() {
                 </ChakraProvider>
             </Box>
             <ChakraProvider>
-                <Text sx={{ ml: "20px", mb: "10px" }}>{data.length} Links out of {shortLimit}</Text>
-                    <TableHeader sortAscDate={sortAscDate} sortDesDate={sortDesDate} sortAsc={sortAsc} sortDes={sortDes} />
+                <Box display={"flex"} justifyContent={"space-between"} gap={"20px"} p={"10px 20px"}>
+                    <Box>
+                        {`${(page * dataLimit) - dataLimit + 1} - ${(page * dataLimit) - dataLimit + filteredData.length}`}                        of
+                        {" " + data.length}
+                    </Box>
+                    <Box display={"flex"} gap={"15px"}>
+                        <Select placeholder='Select Limit' value={dataLimit} onChange={({target})=>{
+                            setDataLimit(+target.value)
+                        }}>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={30}>30</option>
+                            <option value={40}>40</option>
+                        </Select>
+                        <Button onClick={() => {
+                            if (page > 1) {
+                                setPage(page => page - 1)
+                            }
+                        }}>PREV</Button>
+                        <Button disabled={true} onClick={() => {
+                            if (page < (data.length / dataLimit)) {
+                                setPage(page => page + 1)
+                            }
+                        }}>NEXT</Button>
+                    </Box>
+                </Box>
+                <TableHeader sortAscDate={sortAscDate} sortDesDate={sortDesDate} sortAsc={sortAsc} sortDes={sortDes} />
                 <Box display={"flex"} flexDir={"column"} height={"80vh"} overflow="scroll">
                     {
                         filteredData.map((i, index) => {
@@ -229,7 +256,7 @@ export default function TablePage() {
                             let str = ((date + "").split(" "))
                             let showDate = str[2] + "-" + str[1] + "-" + str[3] + ' ' + str[4]
                             return (
-                                <TableRows date={showDate} toast={toast} key={index + i._id} setData={setData} userDataArr={data} data={{...i,showDate}}/>
+                                <TableRows date={showDate} toast={toast} key={index + i._id} setData={setData} userDataArr={data} data={{ ...i, showDate }} />
                             )
                         })
                     }
