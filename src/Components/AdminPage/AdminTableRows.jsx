@@ -45,7 +45,7 @@ const style = {
 export default function TableRows({ data, userDataArr, toast
 }) {
     const { selected, setSelected, editing, setAllUsersData,
-        setAllUsersFilteredData
+        setAllUsersFilteredData, apiLink
     } = useContext(Context);
     const [check, setCheck] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(true);
@@ -54,9 +54,9 @@ export default function TableRows({ data, userDataArr, toast
     const [lastNameValue, setLastNameValue] = useState(lastName)
     const [emailValue, setEmailValue] = useState(email)
     const [passwordValue, setPasswordValue] = useState(password)
-    const [domainValue, setDomainValue] = useState(domain)
+    const [domainValue] = useState(domain)
     const [count, setCount] = useState(1);
-    const [openQR, setOpenQR] = useState(false);
+    // const [openQR, setOpenQR] = useState(false);
     const [isAdminValue, setIsAdminValue] = useState(isAdmin);
     const [totalCredits, setTotalCredits] = useState(0);
     const [usedCredits, setUsedCredits] = useState(0);
@@ -87,12 +87,10 @@ export default function TableRows({ data, userDataArr, toast
     }, [firstNameValue, lastNameValue, emailValue, passwordValue, domainValue, isAdminValue])
 
     useEffect(() => {
-        // axios.get("https://shortlinkapi.onrender.com/shorten/licenceCheck/", {
-        axios.get("http://139.59.69.60:3001/shorten/licenceCheck/", {
+        axios.get(`${apiLink}shorten/licenceCheck/`, {
             email
         }).then(res => setTotalCredits(res.data.limit))
-        // axios.get("https://shortlinkapi.onrender.com/shorten/AllData/", {
-        axios.get("http://139.59.69.60:3001/shorten/AllData/", {
+        axios.get(`${apiLink}shorten/AllData/`, {
             email
         }).then(res => setUsedCredits((res.data.filter(i => i.userID == _id).length)))
     }, [])

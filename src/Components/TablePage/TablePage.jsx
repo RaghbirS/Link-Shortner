@@ -1,4 +1,4 @@
-import { Box, Button, Text, useEditable } from "@chakra-ui/react";
+import { Box, Button, Text } from "@chakra-ui/react";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { Navigate, NavLink } from "react-router-dom";
@@ -12,9 +12,9 @@ import Filters from "./Filters";
 import { EditIcon } from "@chakra-ui/icons";
 
 export default function TablePage() {
-    const { data, setData, isLogin, userDetails, selected, setSelected, filteredData, setFilteredData, editing, setEditing, toast
+    const { data, setData, userDetails, selected, setSelected, filteredData, setFilteredData, editing, setEditing, toast
         , domainValue, setDomainValue, clickDetails,
-        shortLimit, setShortLimit
+        shortLimit, apiLink
     } = useContext(Context);
     const [isEditable, setIsEditable] = useState(false);
     const [domain, setDomain] = useState(domainValue);
@@ -71,12 +71,11 @@ export default function TablePage() {
         setFilteredData(sortedData);
     }
     useEffect(() => {
-        // axios.get(`https://shortlinkapi.onrender.com/shorten/users/${userDetails._id}`).then(res => {
-        axios.get(`http://139.59.69.60:3001/shorten/users/${userDetails._id}`).then(res => {
+        axios.get(`${apiLink}shorten/users/${userDetails._id}`).then(res => {
             setDomainValue(res.data.domain);
             setDomain(res.data.domain)
         })
-    }, [])
+    }, [apiLink,setDomainValue,userDetails._id])
     if (!userDetails._id) return <Navigate to={"/client/login"} />
     return (
         <Box display={"flex"} flexDirection={"column"}>
@@ -118,19 +117,17 @@ export default function TablePage() {
                                 for (let i of selected) {
                                     let temp = {};
                                     for (let j of data) {
-                                        if (j._id == i._id) {
+                                        if (j._id === i._id) {
                                             temp = j;
                                             break
                                         }
                                     }
-                                    // axios.patch(`https://shortlinkapi.onrender.com/shorten/AllData/${i._id}`, temp)
-                                    await axios.patch(`http://139.59.69.60:3001/AllData/${i._id}`, temp)
+                                    await axios.patch(`${apiLink}AllData/${i._id}`, temp)
                                     i.setCheck(false)
                                     i.setIsReadOnly(true)
                                 }
                                 for (let i of clickDetails) {
-                                    // axios.patch(`https://shortlinkapi.onrender.com/shorten/clicks/${i._id}`, {
-                                    await axios.patch(`http://139.59.69.60:3001/shorten/clicks/${i._id}`, {
+                                    await axios.patch(`${apiLink}shorten/clicks/${i._id}`, {
                                         shortURL: i.shortURL
                                     })
                                 }
@@ -175,8 +172,7 @@ export default function TablePage() {
 
                                     for (let i of selected) {
                                         console.log(selected)
-                                        // axios.delete(`https://shortlinkapi.onrender.com/shorten/AllData/${i._id}`);
-                                        axios.delete(`http://139.59.69.60:3001/shorten/AllData/${i._id}`);
+                                        axios.delete(`${apiLink}shorten/AllData/${i._id}`);
                                     }
                                     let filterData = [...data];
                                     for (let i of selected) {
@@ -185,8 +181,7 @@ export default function TablePage() {
                                     for (let i of selected) {
                                         let temp = clickDetails.filter(element => element.shortURL == i.shortLinkValue);
                                         for (let j of temp) {
-                                            // axios.delete(`https://shortlinkapi.onrender.com/shorten/clicks/${j._id}`);
-                                            axios.delete(`http://139.59.69.60:3001/shorten/clicks/${j._id}`);
+                                            axios.delete(`${apiLink}shorten/clicks/${j._id}`);
                                         }
                                     }
                                     setFilteredData(filterData)
@@ -203,14 +198,14 @@ export default function TablePage() {
                             </BasicUsage>
                         </Box>
                         <Box display={"flex"} columnGap={"20px"} flexWrap={"wrap"}>
-                            <Input placeholder="cbxit.in" w={"45%"} border={"2px solid gray"} readOnly={!isEditable} value={domain} onChange={(e) => setDomain(e.target.value)} />
+                            <Input placeholder="Custom Domain" w={"45%"} border={"2px solid gray"} readOnly={!isEditable} value={domain} onChange={(e) => setDomain(e.target.value)} />
                             <Button _hover={{ background: "lightgreen" }} color={"black"} background={"lightgreen"} display={isEditable ? "none" : "flex"} onClick={() => {
                                 setIsEditable(true)
                             }}><EditIcon sx={{ mr: "10px" }} />Add Domain</Button>
                             <Button _hover={{ background: "lightgreen" }} color={"black"} background={"lightgreen"} display={!isEditable ? "none" : "flex"} onClick={() => {
                                 setIsEditable(false)
                                 // axios.patch(`https://shortlinkapi.onrender.com/shorten/users/${userDetails._id}`, {
-                                axios.patch(`http://139.59.69.60:3001/shorten/users/${userDetails._id}`, {
+                                axios.patch(`${apiLink}shorten/users/${userDetails._id}`, {
                                     domain: domain
                                 })
                                 setDomainValue(domain)
@@ -226,8 +221,8 @@ export default function TablePage() {
             </Box>
             <ChakraProvider>
                 <Text sx={{ ml: "20px", mb: "10px" }}>{data.length} Links out of {shortLimit}</Text>
-                <Box display={"flex"} flexDir={"column"} height={"80vh"} overflow="scroll">
                     <TableHeader sortAscDate={sortAscDate} sortDesDate={sortDesDate} sortAsc={sortAsc} sortDes={sortDes} />
+                <Box display={"flex"} flexDir={"column"} height={"80vh"} overflow="scroll">
                     {
                         filteredData.map((i, index) => {
                             let date = new Date(i.dateCreated);

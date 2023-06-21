@@ -12,16 +12,12 @@ import Filters from "./AdminFilters";
 import { EditIcon } from "@chakra-ui/icons";
 
 export default function TablePage() {
-    const { allUsersData, setAllUsersData, isLogin, userDetails, selected, setSelected, allUsersFilteredData, setAllUsersFilteredData, editing, setEditing, toast
-        , domainValue, setDomainValue, clickDetails,
-        shortLimit, setShortLimit, isAdminLogin
+    const { allUsersData, setAllUsersData, selected, setSelected, allUsersFilteredData, setAllUsersFilteredData, editing, setEditing, toast
+        , domainValue, apiLink, isAdminLogin
     } = useContext(Context);
-    const [isEditable, setIsEditable] = useState(false);
-    const [domain, setDomain] = useState(domainValue);
 
     useEffect(() => {
-        // axios.get(`https://shortlinkapi.onrender.com/shorten/users`).then(res => {
-        axios.get(`http://139.59.69.60:3001/shorten/users`).then(res => {
+        axios.get(`${apiLink}shorten/users`).then(res => {
             setAllUsersData(res.data);
             setAllUsersFilteredData(res.data)
         })
@@ -31,15 +27,8 @@ export default function TablePage() {
         <Box display={"flex"} flexDirection={"column"}>
             <Box w={"100%"} h={"150px"} display={"flex"} flexDir={"column"} p={"0 30px"}>
                 <ChakraProvider>
-
                     <Box display={"flex"} alignItems={"center"} h={"50%"} p={"30px 0"} width={"100%"} justifyContent={"space-between"}>
                         <Box display={"flex"} gap={"20px"}>
-                            {/* <NavLink to={"/addNewData"}>
-                                <Button _hover={{ background: "#6262ff" }} color={"white"} background={"#7f7fff"} cursor={"pointer"} display={"flex"} gap={"10px"} alignItems="center" fontWeight={"500"}>
-                                    <svg style={{ width: "15px", fill: "white" }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M240 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H176V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H240V80z" /></svg>
-                                    <Text>Add New URL</Text>
-                                </Button>
-                            </NavLink> */}
                             <Button disabled={selected.length === 0} _hover={{ background: "#00af00" }} color={"white"} background={"green"} display={editing ? "none" : "flex"} onClick={() => {
                                 if (selected.length === 0) {
                                     return toast({
@@ -72,9 +61,8 @@ export default function TablePage() {
                                             break
                                         }
                                     }
-                                    console.log(temp)
-                                    // await axios.patch(`https://shortlinkapi.onrender.com/shorten/users/${i._id}`, temp)
-                                    await axios.patch(`http://139.59.69.60:3001/shorten/users/${i._id}`, temp)
+
+                                    await axios.patch(`${apiLink}shorten/users/${i._id}`, temp)
                                     i.setCheck(false)
                                     i.setIsReadOnly(true)
                                 }
@@ -86,7 +74,6 @@ export default function TablePage() {
                                     position: "top"
                                 })
                             }}>Save</Button>
-
                             <BasicUsage funcClose={async () => {
                                 for (let i of selected) {
                                     i.setCheck(false)
@@ -96,7 +83,6 @@ export default function TablePage() {
                             }}
                                 selected={selected} openModelFunc={() => {
                                     if (selected.length === 0) {
-
                                         toast({
                                             title: `Please Select Data to Delete`,
                                             status: "error",
@@ -119,20 +105,14 @@ export default function TablePage() {
                                     let filterData = [...allUsersData]
                                     for (let i of selected) {
                                         filterData = filterData.filter(element => element._id != i._id)
-                                        // await axios.delete(`https://shortlinkapi.onrender.com/shorten/users/${i._id}`);
-                                        await axios.delete(`http://139.59.69.60:3001/shorten/users/${i._id}`);
-                                        // let { data: userLinks } = await axios.get(`https://shortlinkapi.onrender.com/shorten/AllData?userID=${i._id}`);
-                                        let { data: userLinks } = await axios.get(`http://139.59.69.60:3001/shorten/AllData?userID=${i._id}`);
+                                        await axios.delete(`${apiLink}/users/${i._id}`);
+                                        let { data: userLinks } = await axios.get(`${apiLink}shorten/AllData?userID=${i._id}`);
                                         for (let links of userLinks) {
-                                            // let { data: clicksTempData } = await axios.get(`https://shortlinkapi.onrender.com/shorten/clicks?userID=${i._id}`);
-                                            let { data: clicksTempData } = await axios.get(`http://139.59.69.60:3001/shorten/clicks?userID=${i._id}`);
+                                            let { data: clicksTempData } = await axios.get(`${apiLink}shorten/clicks?userID=${i._id}`);
                                             for (let clicksData of clicksTempData) {
-                                                
-                                                // await axios.delete(`https://shortlinkapi.onrender.com/shorten/clicks/${clicksData._id}`)
-                                                await axios.delete(`http://139.59.69.60:3001/shorten/clicks/${clicksData._id}`)
+                                                axios.delete(`${apiLink}shorten/clicks/${clicksData._id}`)
                                             }
-                                            // await axios.delete(`https://shortlinkapi.onrender.com/shorten/AllData/${links._id}`);
-                                            await axios.delete(`http://139.59.69.60:3001/shorten/AllData/${links._id}`);
+                                            axios.delete(`${apiLink}shorten/AllData/${links._id}`);
                                         }
                                     }
                                     setAllUsersFilteredData(filterData)

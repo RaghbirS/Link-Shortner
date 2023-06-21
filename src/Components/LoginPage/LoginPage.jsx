@@ -16,14 +16,13 @@ import Cookies from 'js-cookie';
 
 
 export default function LoginPage() {
-  const { userDetails, setUserDetails, toast, setDomainValue, shortLimit, setShortLimit } = useContext(Context);
+  const { userDetails, setUserDetails, toast, setDomainValue, apiLink } = useContext(Context);
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showError, setShowError] = useState(false)
   async function login() {
     setShowError(true)
-    // let data = await axios.get("https://shortlinkapi.onrender.com/shorten/users");
-    let data = await axios.get("http://139.59.69.60:3001/shorten/users");
+    let data = await axios.get(`${apiLink}shorten/users`);
     data = data.data;
     for (let i of data) {
       if (i.email === email) {
@@ -39,7 +38,6 @@ export default function LoginPage() {
         }
         setDomainValue(i.domain)
         setUserDetails(userDatails)
-        // localStorage.setItem("linkShortnerUserData",JSON.stringify(userDatails));
         Cookies.set('user', JSON.stringify(userDatails));
         return
       }

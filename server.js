@@ -398,6 +398,7 @@ function generateOTP(length) {
 app.post("/shorten/sendOtp", async (req, res) => {
     try {
         const { email } = req.body;
+        console.log(email)
         const OTP = generateOTP(6);
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
@@ -406,14 +407,14 @@ app.post("/shorten/sendOtp", async (req, res) => {
             auth: {
                 // user: 'apps@ceoitbox.in',
                 // pass: 'xnhrwhxmpkamzawt'
-                user: 'raghbir@ceoitbox.in',
-                pass: 'wzqjqigcjndowund'
+                user: 'apps@ceoitbox.com',
+                pass: 'hxwpuovqvbmpjlus'
             }
         });
         const mailOptions = {
-            from: 'apps@ceoitbox.in',
+            from: 'apps@ceoitbox.com',
             to: email,
-            subject: 'OTP',
+            subject: 'Short URL OTP',
             text: 'Your CBXITBOX OTP is ' + OTP
         };
         transporter.sendMail(mailOptions, function (error, info) {

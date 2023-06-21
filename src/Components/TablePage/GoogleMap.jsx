@@ -21,7 +21,6 @@ function SimpleMap() {
     mapTypeId: 'satellite',
   };
   return (
-    // Important! Always set the container height explicitly
     <div style={{ height: '100vh', width: '100%' }}>
       <GoogleMapReact
         bootstrapURLKeys={{ key: "AIzaSyBiLWEqbEv65Bjtyy9BZ2C09aMratx6Juc" }}

@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const Contact = () => {
     let [senderDetails, setSenderDetails] = useState({ name: '', email: '', message: '' });
-    const { toast } = useContext(Context);
+    const { toast, apiLink } = useContext(Context);
     function isValidEmail() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(senderDetails.email);
@@ -30,11 +30,9 @@ const Contact = () => {
             isClosable: true,
             position: "top",
         })
-        axios.post("http://localhost:3001/shorten/send/email", senderDetails);
-        axios.post("http://localhost:3001/shorten/messages", senderDetails);
-        // axios.post("https://shortlinkapi.onrender.com/shorten/send/email", senderDetails);
-        // axios.post("https://shortlinkapi.onrender.com/shorten/messages", senderDetails);
-        setSenderDetails({ name: '', email: '', message: '' })
+        axios.post(`${apiLink}shorten/send/email`, senderDetails);
+        axios.post(`${apiLink}shorten/messages`, senderDetails);
+        setSenderDetails({ name: '', email: '', message: '' });
     }
     return (
         <Box id='contact' minH={"140vh"} bg={"url(https://cbxit.in/assets/images/contact-bg.jpg)"} bgSize={'cover'}>

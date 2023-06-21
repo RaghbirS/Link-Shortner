@@ -1,4 +1,4 @@
-import { Box, Input } from "@chakra-ui/react";
+import { Box, Button, Input } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 
 import { Context } from "../../context";
@@ -18,10 +18,7 @@ export default function Filters() {
     const [searchShortURL, setsearchShortURL] = useState("")
     const [searchRemarks, setSearchRemarks] = useState("")
     const [sliderValues, setSliderValues] = useState([new Date('2022.01.01').getTime() / 1000, new Date().getTime() / 1000]);
-    const { setData, isLogin, userDetails, selected, setSelected, filteredData, editing, setEditing, toast
-        , domainValue, setDomainValue, clickDetails,
-        shortLimit,setShortLimit
-    } = useContext(Context);
+    const { userDetails } = useContext(Context);
     useEffect(() => {
         let temp = [];
         for (let i of data) {
@@ -41,6 +38,13 @@ export default function Filters() {
                 <Input value={searchShortURL} onChange={e => setsearchShortURL(e.target.value)} w={"250"} placeholder={"Search Short URL"} />
                 <Input value={searchRemarks} onChange={e => setSearchRemarks(e.target.value)} w={"300"} placeholder={"Search Remarks"} />
                 <DateRangeSlider sliderValues={sliderValues} setSliderValues={setSliderValues} />
+                <Button onClick={() => {
+                    setSearchLongURL("");
+                    setSearchAlias("")
+                    setsearchShortURL("")
+                    setSearchRemarks("")
+                    setSliderValues([new Date('2022.01.01').getTime() / 1000, new Date().getTime() / 1000])
+                }}>Reset</Button>
             </Box>
         </Box>
     )

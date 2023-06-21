@@ -20,7 +20,7 @@ import axios from 'axios';
 import { Context } from '../../context';
 
 export default function RegisterPage() {
-  const { toast } = useContext(Context);
+  const { toast, apiLink } = useContext(Context);
   const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
@@ -35,6 +35,9 @@ export default function RegisterPage() {
   const [isOtpSent, setIsOtpSent] = useState(false);
 
   function handleSubmit() {
+    if((!isOtpVerified) || (!isValidEmail()) || (password.length < 8) || (!firstName || !lastName) ) {
+      setShowError(true)
+    }
     if (!isOtpVerified) return toast({
       title: `OTP is not verified`,
       status: "error",
@@ -59,6 +62,7 @@ export default function RegisterPage() {
       isClosable: true,
       position: "top",
     })
+    
     let obj = {
       firstName,
       lastName,
@@ -66,8 +70,7 @@ export default function RegisterPage() {
       password,
       domain:""
     }
-    // axios.post("https://shortlinkapi.onrender.com/shorten/users", obj);
-    axios.post("http://139.59.69.60:3001/shorten/users", obj);
+    axios.post(`${apiLink}shorten/users`, obj);
     setFirstName("")
     setLastName("")
     setEmail("")
@@ -116,8 +119,7 @@ export default function RegisterPage() {
                     isClosable: true,
                     position: "top",
                   })
-                  // let { data } = await axios.get(`https://shortlinkapi.onrender.com/shorten/users?email=${email}`);
-                  let { data } = await axios.get(`http://139.59.69.60:3001/shorten/users?email=${email}`);
+                  let { data } = await axios.get(`${apiLink}shorten/users?email=${email}`);
                   if (data.length == 1) {
                     return toast({
                       title: `User already exist`,
@@ -137,8 +139,9 @@ export default function RegisterPage() {
                     });
                   }, 1000)
 
-                  // axios.post("https://shortlinkapi.onrender.com/shorten/sendOtp", { email }).then(res => setVerificationOtp(res.data + ""));
-                  axios.post("http://139.59.69.60:3001/shorten/sendOtp", { email }).then(res => setVerificationOtp(res.data + ""));
+              
+                  axios.post(`${apiLink}shorten/sendOtp`, { email }).then(res => setVerificationOtp(res.data + ""));
+                  setIsOtpSent(true)
                   toast({
                     title: `OTP sent`,
                     status: "success",
@@ -178,7 +181,7 @@ export default function RegisterPage() {
                 })
               }} bg={isOtpVerified ? "gray" : 'blue.100'}>Verify</Button>
             </Box>
-            <HStack>
+            {isOtpVerified && <><HStack>
               <Box display={isOtpVerified ? "block" : "none"}>
                 <FormControl id="firstName" isRequired>
                   <FormLabel>First Name</FormLabel>
@@ -208,7 +211,7 @@ export default function RegisterPage() {
                   </Button>
                 </InputRightElement>
               </InputGroup>
-            </FormControl>
+            </FormControl></>}
             <Stack spacing={10} pt={2}>
 
               <Button

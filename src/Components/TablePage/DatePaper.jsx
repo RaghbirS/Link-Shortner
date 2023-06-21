@@ -10,8 +10,8 @@ import {
 
 function DateRangeSlider({sliderValues,setSliderValues}) {
   
-  const [sliderMin, setSliderMin] = useState(new Date('2022.01.01').getTime() / 1000);
-  const [sliderMax, setSliderMax] = useState(new Date().getTime() / 1000);
+  const [sliderMin] = useState(new Date('2022.01.01').getTime() / 1000);
+  const [sliderMax] = useState(new Date().getTime() / 1000);
 
   const updateInputValue = (values) => {
     const startDate = new Date(values[0] * 1000);

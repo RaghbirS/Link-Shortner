@@ -1,4 +1,3 @@
-import { Box, Button, ChakraProvider } from "@chakra-ui/react";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom"
@@ -8,36 +7,32 @@ import NavBar from "./Components/Nav/Nav";
 import RegisterPage from "./Components/RegisterPage/RegisterPage";
 import TablePage from "./Components/TablePage/TablePage";
 import { Context } from "./context";
-import { io } from "socket.io-client";
+
 import Map from "./Components/TablePage/GoogleMap";
 import ForgotPassword from "./Components/forgotPassword/forgotPassword";
 import AdminLogin from "./Components/AdminLogin/AdminLogin";
 import AdminPage from "./Components/AdminPage/AdminTablePage";
 import HomePage from "./Components/HomePage/HomePage";
 function App() {
-  const { data, setData, isLogin, userDetails, setFilteredData, toast, newDataAdded, filteredData,
-    clickDetails, setShortLimit, setclickDetails, isAdminLogin, setisAdminLogin,
-    googleSheetDeployLink, setGoogleSheetDeployLink } = useContext(Context);
+  const {socket, data, setData, userDetails, setFilteredData, toast, newDataAdded, filteredData, setShortLimit, setclickDetails, setGoogleSheetDeployLink, apiLink } = useContext(Context);
   const [count, setCount] = useState(1);
   useEffect(() => {
     if (!userDetails._id) return;
 
     (async () => {
-      // let response = await axios.get("https://shortlinkapi.onrender.com/shorten/licenceCheck", {
-      let response = await axios.get("http://139.59.69.60:3001/shorten/licenceCheck", {
+      let response = await axios.get(apiLink+"shorten/licenceCheck", {
         email: userDetails.email
       });
       response = response.data;
       setShortLimit(response.limit)
     })()
-    // axios.get(`https://shortlinkapi.onrender.com/shorten/AllData?userID=${userDetails._id}`).then(res => {
-    axios.get(`http://139.59.69.60:3001/shorten/AllData?userID=${userDetails._id}`).then(res => {
+
+    axios.get(`${apiLink}shorten/AllData?userID=${userDetails._id}`).then(res => {
       let sortedTempData = res.data.sort((a, b) => Number(b.favourite) - Number(a.favourite))
       setData(sortedTempData)
       setFilteredData(sortedTempData)
     })
-    // axios.get(`https://shortlinkapi.onrender.com/shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
-    axios.get(`http://139.59.69.60:3001/shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
+    axios.get(`${apiLink}shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
       setclickDetails(data)
     })
   }, [userDetails._id])
@@ -65,8 +60,7 @@ function App() {
     }
   }, [userDetails._id]);
   useEffect(() => {
-    axios.get(`http://139.59.69.60:3001/shorten/users/${userDetails._id}`).then(res => {
-      console.log(res.data.googleSheetDeployLink)
+    axios.get(`${apiLink}shorten/users/${userDetails._id}`).then(res => {
       setGoogleSheetDeployLink(res.data.googleSheetDeployLink || "")
     })
   }, [])
@@ -89,9 +83,7 @@ function App() {
 
   useEffect(() => {
     if (!userDetails._id) return;
-    const socket = io('http://139.59.69.60:3001/');
-    // const socket = io('https://shortlinkapi.onrender.com');
-    console.log("render")
+    
     socket.on("newClick", res => {
       let tempData = [...data];
       let tempFilteredData = [...filteredData];

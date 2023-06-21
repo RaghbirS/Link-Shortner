@@ -34,7 +34,6 @@ export default function Filters() {
     return (
         <Box h={"100%"} w={"100%"} display={"flex"} flexDir={"column"} gap={"10px"}>
             <Box width={"100%"} height={"50%"} display={"flex"} justifyContent={"space-evenly"} alignItems={"center"}>
-                {/* <DateRangeSlider sliderValues={sliderValues} setSliderValues={setSliderValues} /> */}
                 <Input value={firstName} onChange={e => setFirstName(e.target.value)} w={"250"} placeholder={"First Name"} />
                 <Input value={lastName} onChange={e => setLastName(e.target.value)} w={"250"} placeholder={"Last Name"} />
                 <Input value={email} onChange={e => setEmail(e.target.value)} w={"250"} placeholder={"Email"} />

@@ -1,5 +1,5 @@
 
-import { Box, Button, FormControl, Input,FormLabel, Text } from "@chakra-ui/react"
+import { Box, Button, FormControl, Input, Text } from "@chakra-ui/react"
 import axios from "axios"
 import { useContext, useState } from "react"
 import { Navigate } from "react-router-dom"
@@ -15,15 +15,14 @@ export default function ForgotPassword() {
     const [otpTimeout, setOtpTimeout] = useState(0);
     const [userData, setUserData] = useState({});
     const [submitted,setSubmitted] = useState(false)
-    const {toast} = useContext(Context)
+    const {toast, apiLink} = useContext(Context)
     const isValidEmail = () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(userName);
     };
     async function handleSubmit() {
         if (!password) return alert("Invalid Password")
-        // await axios.patch(`https://shortlinkapi.onrender.com/shorten/users/${userData._id}`,{
-        await axios.patch(`http://139.59.69.60:3001/shorten/users/${userData._id}`,{
+        await axios.patch(`${apiLink}shorten/users/${userData._id}`,{
             password
         })
         setSubmitted(true);
@@ -58,8 +57,7 @@ export default function ForgotPassword() {
                                 position: "top",
                               });
                             if(isOtpVerified) return;
-                            // let user = await axios.get(`https://shortlinkapi.onrender.com/shorten/users?email=${userName}`);
-                            let user = await axios.get(`http://139.59.69.60:3001/shorten/users?email=${userName}`);
+                            let user = await axios.get(`${apiLink}shorten/users?email=${userName}`);
                             user = user.data[0];
                             if (!user) return toast({
                                 title: `User does not exist`,
@@ -71,15 +69,14 @@ export default function ForgotPassword() {
                             setOtpTimeout(prev => prev + 1)
                             let intervalId = setInterval(() => {
                                 setOtpTimeout(prev => {
-                                    if (prev == 60) {
+                                    if (prev === 60) {
                                         clearInterval(intervalId);
                                         return 0;
                                     }
                                     return prev + 1;
                                 });
                             }, 1000)
-                            // axios.post("https://shortlinkapi.onrender.com/shorten/sendOtp", { email: userName }).then(res => setVerificationOtp(res.data + ""));
-                            axios.post("http://139.59.69.60:3001/shorten/sendOtp", { email: userName }).then(res => setVerificationOtp(res.data + ""));
+                            axios.post(`${apiLink}shorten/sendOtp`, { email: userName }).then(res => setVerificationOtp(res.data + ""));
 
                         }}>{otpTimeout || "Send OTP"}</Button>
                 </Box>
@@ -97,7 +94,7 @@ export default function ForgotPassword() {
                     <Button disabled={isOtpVerified} sx={{ height: "40px", width: "20%" }}
                          onClick={() => {
                             if(isOtpVerified) return;
-                            if (verificationOtp !== OTP || OTP == "") alert("OTP does not match.");
+                            if (verificationOtp !== OTP || OTP === "") alert("OTP does not match.");
                             else {
                                 toast({
                                     title: `OTP Verified`,

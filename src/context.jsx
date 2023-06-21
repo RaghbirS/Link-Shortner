@@ -1,7 +1,7 @@
 import { useToast } from "@chakra-ui/react";
 import { createContext, useState } from "react";
 import Cookies from 'js-cookie';
-
+import { io } from "socket.io-client";
 
 export let Context = createContext();
 
@@ -28,6 +28,13 @@ export default function ContextProvider({ children }) {
     const [allUsersFilteredData,setAllUsersFilteredData] = useState([])
     const [googleSheetDeployLink,setGoogleSheetDeployLink] = useState("")
     const toast = useToast()
+    let apiLink = "http://localhost:3001/";
+    if (document.location.href.includes("localhost")) {
+      apiLink = "http://localhost:3001/";
+    } else {
+      apiLink = "http://139.59.69.60:3001/";
+    }
+    const socket = io(apiLink);
     return (
         <Context.Provider
             value={{
@@ -49,7 +56,8 @@ export default function ContextProvider({ children }) {
                 isAdminLogin,setisAdminLogin,
                 allUsersData,setAllUsersData,
                 allUsersFilteredData,setAllUsersFilteredData,
-                googleSheetDeployLink,setGoogleSheetDeployLink
+                googleSheetDeployLink,setGoogleSheetDeployLink,
+                apiLink,socket
             }}>
             {children}
         </Context.Provider>

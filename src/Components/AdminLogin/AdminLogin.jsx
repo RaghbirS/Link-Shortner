@@ -13,12 +13,11 @@ import { useContext, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Context } from '../../context';
 export default function AdminLogin() {
-  const { userDetails, setUserDetails, toast, setDomainValue, shortLimit, setShortLimit, isAdminLogin, setisAdminLogin } = useContext(Context);
+  const { userDetails, apiLink, toast, isAdminLogin, setisAdminLogin } = useContext(Context);
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   async function login() {
-    // let { data } = await axios.get("https://shortlinkapi.onrender.com/shorten/users")
-    let { data } = await axios.get("http://139.59.69.60:3001/shorten/users")
+    let { data } = await axios.get(`${apiLink}shorten/users`)
     for (let i of data) {
       if (i.email === email && i.password === password) {
         if (i.isAdmin) {

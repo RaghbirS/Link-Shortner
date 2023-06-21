@@ -19,8 +19,8 @@ export default function AddNewData() {
   const [alias, setAlias] = useState("")
   const [remarks, setRemarks] = useState("")
   const [shortLink, setShortLink] = useState("")
-  const { data, setData, newDataAdded, userDetails, setNewDataAdded, filteredData, setFilteredData, domainValue, toast,
-    shortLimit, setShortLimit } = useContext(Context);
+  const { data, setData, newDataAdded, userDetails, setNewDataAdded, setFilteredData, domainValue, toast,
+    shortLimit, apiLink } = useContext(Context);
 
   async function handleSubmit() {
     if (data.length > shortLimit) {
@@ -56,8 +56,7 @@ export default function AddNewData() {
       obj.alias = temp;
       obj.shortURL = obj.shortURL + temp;
     }
-    // let tempAllData = await axios.get(`https://shortlinkapi.onrender.com/shorten/AllData`);
-    let tempAllData = await axios.get(`http://139.59.69.60:3001/shorten/AllData`);
+    let tempAllData = await axios.get(`${apiLink}shorten/AllData`);
     tempAllData = tempAllData.data;
     for (let i of tempAllData) {
       if (i.shortURL == shortLink) {
@@ -70,8 +69,7 @@ export default function AddNewData() {
       }
     }
 
-    // axios.post(`https://shortlinkapi.onrender.com/shorten/AllData`, obj)
-    axios.post(`http://139.59.69.60:3001/shorten/AllData`, obj)
+    axios.post(`${apiLink}shorten/AllData`, obj)
     let tempData = [...data, obj].sort((a, b) => Number(b.favourite) - Number(a.favourite))
     setData(tempData)
     setFilteredData(tempData)
@@ -83,8 +81,7 @@ export default function AddNewData() {
   }
   useEffect(() => {
     if (!domainValue) {
-      // setShortLink(`https://shortlinkapi.onrender.com/${alias}`)
-      setShortLink(`http://139.59.69.60:3001/${alias}`)
+      setShortLink(`${apiLink}${alias}`)
     }
     else {
       setShortLink(`http://${domainValue}/${alias}`)
