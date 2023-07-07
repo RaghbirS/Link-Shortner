@@ -12,8 +12,9 @@ import axios from 'axios';
 import { useContext, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Context } from '../../context';
+import Cookies from 'js-cookie';
 export default function AdminLogin() {
-  const { userDetails, apiLink, toast, isAdminLogin, setisAdminLogin } = useContext(Context);
+  const { adminUserDetails, setAdminUserDetails, apiLink, toast, setisAdminLogin } = useContext(Context);
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   async function login() {
@@ -21,6 +22,8 @@ export default function AdminLogin() {
     for (let i of data) {
       if (i.email === email && i.password === password) {
         if (i.isAdmin) {
+          Cookies.set('admin', JSON.stringify({ _id: i._id }));
+          setAdminUserDetails(i)
           setisAdminLogin(true)
           return
         }
@@ -37,8 +40,7 @@ export default function AdminLogin() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
-  if (userDetails._id) return <Navigate to={"/"} />
-  if (isAdminLogin) return <Navigate to={"/client/adminPage"} />
+  if (adminUserDetails._id) return <Navigate to={"/client/adminPage"} />
 
   return (
     <Flex

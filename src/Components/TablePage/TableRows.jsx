@@ -29,7 +29,7 @@ function CustomIconStar({ onClick, bg }) {
 export default function TableRows({ data, userDataArr, setData, toast, date
 }) {
     const { googleSheetDeployLink, setGoogleSheetDeployLink, selected, setSelected, editing, domainValue, userDetails, setFilteredData, clickDetails, setclickDetails
-        , setMapData, apiLink
+        , setMapData, apiLink, setUnselect, setPaginativeData
     } = useContext(Context);
     const [check, setCheck] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(true);
@@ -44,7 +44,6 @@ export default function TableRows({ data, userDataArr, setData, toast, date
     const [isGoogleSheetEditable, setIsGoogleSheetEditable] = useState(false);
     const deployLinkRef = useRef(null);
     useEffect(() => {
-        console.log(date)
         if (count == 1) {
             return setCount(prev => prev + 1)
         }
@@ -54,6 +53,7 @@ export default function TableRows({ data, userDataArr, setData, toast, date
             shortURL: shortLinkValue,
             remarks: remarksValue,
             clicks: clicks,
+            dateCreated: date,
             domain: domainValue || "ceoitbox",
             userID: userDetails._id
             , _id: _id
@@ -77,6 +77,9 @@ export default function TableRows({ data, userDataArr, setData, toast, date
         }
         setclickDetails(temp)
     }, [aliasValue])
+    useEffect(() => {
+        setUnselect(p => [...p, { _id, shortLinkValue, shortURL, isReadOnly, setIsReadOnly, check, setCheck, }])
+    }, [])
     return (
         <Box display={"flex"} minW={"100%"} background={"none"}>
             <Box flexShrink={0} overflow={"hidden"} borderRadius={"none"} h={"40px"} type={"checkbox"} w={"6%"} border={"1px solid #dee2e6"} textAlign={"center"} >
@@ -103,7 +106,7 @@ export default function TableRows({ data, userDataArr, setData, toast, date
 
                 </Button>
             </Box>
-            <Input flexShrink={0} w={"13%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={true} borderRadius={"none"} h={"40px"} value={date} border={"2px solid #dee2e6"}></Input>
+            <Input flexShrink={0} w={"13%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={true} borderRadius={"none"} h={"40px"} defaultValue={date} onChange={()=>{}} border={"2px solid #dee2e6"}></Input>
             <Input color={!isReadOnly ? "white" : "black"} background={!isReadOnly ? "#888888" : "none"} flexShrink={0} w={"18%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={isReadOnly} onChange={(e) => setLongURLValue(e.target.value)} borderRadius={"none"} h={"40px"} value={longURLValue} border={"2px solid #dee2e6"}></Input>
             <Input color={!isReadOnly ? "white" : "black"} background={!isReadOnly ? "#888888" : "none"} flexShrink={0} w={"10%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={isReadOnly} onChange={(e) => {
                 setAliasValue(e.target.value)
@@ -115,8 +118,8 @@ export default function TableRows({ data, userDataArr, setData, toast, date
                 }
             }} borderRadius={"none"} h={"40px"} value={aliasValue} border={"2px solid #dee2e6"}></Input>
             <Box w={"20%"} position={"relative"}>
-                <Input position={"absolute"} flexShrink={0} w={"100%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={true} onChange={(e) => (e.target.value)} borderRadius={"none"} h={"40px"} value={shortLinkValue} border={"2px solid #dee2e6"}>{ }</Input>
-                <Box position={"absolute"} w={"100%"} h={"100%"}>
+                <Input position={"absolute"} flexShrink={0} w={"100%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={true} onChange={(e) => (e.target.value)} borderRadius={"none"} h={"40px"} defaultValue={shortLinkValue} border={"2px solid #dee2e6"}>{ }</Input>
+                <Box position={"absolute"} w={"fit-content"} h={"100%"} right={0}>
                     <CopyIcon onClick={async () => {
                         await navigator.clipboard.writeText(shortLinkValue);
                         toast({
@@ -146,7 +149,7 @@ export default function TableRows({ data, userDataArr, setData, toast, date
                     for (let i = 0; i < temp.length; i++) {
                         if (temp[i]._id == _id) {
                             temp[i].favourite = !favourite;
-                            setFilteredData(temp.sort((a, b) => Number(b.favourite) - Number(a.favourite)))
+                            setPaginativeData(temp.sort((a, b) => Number(b.favourite) - Number(a.favourite)))
                             return setData(temp.sort((a, b) => Number(b.favourite) - Number(a.favourite)))
                         }
                     }
@@ -170,7 +173,7 @@ export default function TableRows({ data, userDataArr, setData, toast, date
                                     setIsGoogleSheetEditable(false)
                                     axios.patch(`${apiLink}shorten/users/${userDetails._id}`, {
                                         googleSheetDeployLink: deployLinkRef.current.value
-                                    }).then(r=>console.log(r))
+                                    }).then(r => console.log(r))
                                     setGoogleSheetDeployLink(deployLinkRef.current.value)
                                 }}>Save</Button>
                             </Box>

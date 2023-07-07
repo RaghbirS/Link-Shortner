@@ -1,9 +1,9 @@
 import { Box, Button, Modal, ModalContent, ModalOverlay, Select, Text } from "@chakra-ui/react";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
-import { Navigate, NavLink } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { Context } from "../../context";
-import TableHeader from "./TableHeader";
+import AdminTableHeader from "./TableHeader";
 import TableRows from "./TableRows";
 import { ChakraProvider } from "@chakra-ui/react";
 import BasicUsage from "./Modal";
@@ -13,11 +13,11 @@ import { ChevronLeftIcon, ChevronRightIcon, EditIcon } from "@chakra-ui/icons";
 import SkeletonLoading from "./SkeletonLoading";
 import AddNewData from "../AddNewData/AddNewData";
 
-export default function TablePage() {
+export default function AdminTablePage() {
     const { loading, data, setData, userDetails, selected, setSelected, filteredData, setFilteredData, editing, setEditing, toast
         , domainValue, setDomainValue, clickDetails,
         shortLimit, apiLink, dataLimit, setDataLimit,
-        page, setPage, paginativeData, setPaginativeData
+        page, setPage, adminUserDetails, setPaginativeData, setLoading
     } = useContext(Context);
     const [isEditable, setIsEditable] = useState(false);
     const [domain, setDomain] = useState(domainValue);
@@ -25,10 +25,10 @@ export default function TablePage() {
     function sortAsc(param) {
         const temp = [...data]
         const sortedData = [...temp].sort((a, b) => {
-            if (a[param] > b[param]) {
+            if ((a[param]|| "") > (b[param] || "")) {
                 return -1;
             }
-            if (a[param] < b[param]) {
+            if ((a[param] || "") < (b[param] || "")) {
                 return 1;
             }
             return 0;
@@ -39,10 +39,10 @@ export default function TablePage() {
     function sortDes(param) {
         const temp = [...data]
         const sortedData = [...temp].sort((a, b) => {
-            if (a[param] > b[param]) {
+            if ((a[param] || "") > (b[param] || "")) {
                 return 1;
             }
-            if (a[param] < b[param]) {
+            if ((a[param] || "") < (b[param] || "")) {
                 return -1;
             }
             return 0;
@@ -79,12 +79,14 @@ export default function TablePage() {
     }
     const [isModalOpen, setIsModalOpen] = useState(false)
     useEffect(() => {
-        axios.get(`${apiLink}shorten/users/${userDetails._id}`).then(res => {
-            setDomainValue(res.data.domain);
-            setDomain(res.data.domain)
+        axios.get(`${apiLink}shorten/users`).then(res => {
+            console.log(res.data)
+            setData(res.data)
+            setPaginativeData(res.data)
+            setLoading(false)
         })
-    }, [apiLink, setDomainValue, userDetails._id])
-    if (!userDetails._id) return <Navigate to={"/client/login"} />
+    }, [apiLink, setDomainValue, adminUserDetails._id])
+    if (!adminUserDetails._id) return <Navigate to={"/client/adminLogin"} />
     return (
         <Box display={"flex"} flexDirection={"column"}>
             <Box w={"100%"} minH={"150px"} display={"flex"} flexDir={"column"} p={"0 30px"}>
@@ -93,58 +95,11 @@ export default function TablePage() {
                     <Box display={"flex"} alignItems={"center"} h={"50%"} p={"30px 0"} width={"100%"} justifyContent={"space-between"}>
                         <Box display={"flex"} gap={"20px"}>
                             {/* <B to={"/client/addNewData"}> */}
-                            <Button onClick={() => setIsModalOpen(true)} _hover={{ background: "#6262ff" }} color={"white"} background={"#7f7fff"} cursor={"pointer"} display={"flex"} gap={"10px"} alignItems="center" fontWeight={"500"}>
+                            {/* <Button onClick={() => setIsModalOpen(true)} _hover={{ background: "#6262ff" }} color={"white"} background={"#7f7fff"} cursor={"pointer"} display={"flex"} gap={"10px"} alignItems="center" fontWeight={"500"}>
                                 <svg style={{ width: "15px", fill: "white" }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M240 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H176V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H240V80z" /></svg>
                                 <Text>Add New URL</Text>
-                            </Button>
+                            </Button> */}
                             {/* </B> */}
-                            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description" > <ModalOverlay />
-                                <ModalContent>
-                                    <AddNewData onClose={() => setIsModalOpen(false)} onSub={async (obj) => {
-
-                                        if (data.length > shortLimit) {
-                                            return toast({
-                                                title: `Free Limit reached !`,
-                                                status: "error",
-                                                isClosable: true,
-                                                position: "top"
-                                            })
-                                        }
-                                        if (obj.longURL.length === 0) {
-                                            return toast({
-                                                title: `Long URL and Alias is required`,
-                                                status: "error",
-                                                isClosable: true,
-                                                position: "top"
-                                            })
-                                        }
-                                        let tempAllData = await axios.get(`${apiLink}shorten/AllData`);
-                                        tempAllData = tempAllData.data;
-                                        for (let i of tempAllData) {
-                                            if (i.shortURL == obj.shortURL) {
-                                                return toast({
-                                                    title: `The alias is already being used on the same domain`,
-                                                    status: "error",
-                                                    isClosable: true,
-                                                    position: "top"
-                                                })
-                                            }
-                                        }
-
-                                        axios.post(`${apiLink}shorten/AllData`, obj)
-                                        let tempData = [obj, ...data].sort((a, b) => Number(b.favourite) - Number(a.favourite))
-                                        setData(tempData)
-                                        setPaginativeData(tempData)
-                                        toast({
-                                            title: `New Link Created`,
-                                            status: "success",
-                                            isClosable: true,
-                                            position: "top"
-                                        })
-                                        setIsModalOpen(false)
-                                    }} />
-                                </ModalContent>
-                            </Modal>
                             <Button disabled={selected.length === 0} _hover={{ background: "#00af00" }} color={"white"} background={"green"} display={editing ? "none" : "flex"} onClick={() => {
                                 if (selected.length === 0) {
                                     return toast({
@@ -172,20 +127,17 @@ export default function TablePage() {
                                 for (let i of selected) {
                                     let temp = {};
                                     for (let j of data) {
-                                        if (j._id === i._id) {
+                                        if (j._id == i._id) {
                                             temp = j;
                                             break
                                         }
                                     }
-                                    axios.patch(`${apiLink}shorten/AllData/${i._id}`, temp)
+
+                                    axios.patch(`${apiLink}shorten/users/${i._id}`, temp)
                                     i.setCheck(false)
                                     i.setIsReadOnly(true)
                                 }
-                                for (let i of clickDetails) {
-                                    axios.patch(`${apiLink}shorten/clicks/${i._id}`, {
-                                        shortURL: i.shortURL
-                                    })
-                                }
+                                setPaginativeData(structuredClone(data))
                                 setSelected([])
                                 toast({
                                     title: `Data Edited Successfully`,
@@ -193,9 +145,7 @@ export default function TablePage() {
                                     isClosable: true,
                                     position: "top"
                                 })
-                                setPaginativeData(structuredClone(data))
                             }}>Save</Button>
-
                             <BasicUsage funcClose={async () => {
                                 for (let i of selected) {
                                     i.setCheck(false)
@@ -205,7 +155,6 @@ export default function TablePage() {
                             }}
                                 selected={selected} openModelFunc={() => {
                                     if (selected.length === 0) {
-
                                         toast({
                                             title: `Please Select Data to Delete`,
                                             status: "error",
@@ -225,22 +174,24 @@ export default function TablePage() {
                                     }
                                     return true
                                 }} onClick={async () => {
+                                    let filterData = [...data]
+                                    for (let i of selected) {
+                                        filterData = filterData.filter(element => element._id != i._id)
+                                        axios.delete(`${apiLink}shorten/users/${i._id}`);
+                                        axios.get(`${apiLink}shorten/AllData?userID=${i._id}`).then(({ data: userLinks }) => {
+                                            for (let links of userLinks) {
+                                                axios.get(`${apiLink}shorten/clicks?userID=${i._id}`).then(({ data: clicksTempData }) => {
+                                                    for (let clicksData of clicksTempData) {
+                                                        axios.delete(`${apiLink}shorten/clicks/${clicksData._id}`)
+                                                    }
+                                                    axios.delete(`${apiLink}shorten/AllData/${links._id}`);
+                                                })
+                                            }
+                                        })
 
-                                    for (let i of selected) {
-                                        axios.delete(`${apiLink}shorten/AllData/${i._id}`);
                                     }
-                                    let filterData = [...data];
-                                    for (let i of selected) {
-                                        filterData = filterData.filter(e => e._id != i._id)
-                                    }
-                                    for (let i of selected) {
-                                        let temp = clickDetails.filter(element => element.shortURL == i.shortLinkValue);
-                                        for (let j of temp) {
-                                            axios.delete(`${apiLink}shorten/clicks/${j._id}`);
-                                        }
-                                    }
-                                    setFilteredData(filterData)
                                     setData(filterData)
+                                    setPaginativeData(filterData)
                                     setSelected([])
                                     toast({
                                         title: `Data Deleted Successfully`,
@@ -249,21 +200,7 @@ export default function TablePage() {
                                         position: "top"
                                     })
                                 }}>
-
                             </BasicUsage>
-                        </Box>
-                        <Box display={"flex"} columnGap={"20px"} flexWrap={"wrap"}>
-                            <Button _hover={{ background: "lightgreen" }} color={"black"} background={"lightgreen"} display={isEditable ? "none" : "flex"} onClick={() => {
-                                setIsEditable(true)
-                            }}><EditIcon sx={{ mr: "10px" }} />Add Domain</Button>
-                            <Button _hover={{ background: "lightgreen" }} color={"black"} background={"lightgreen"} display={!isEditable ? "none" : "flex"} onClick={() => {
-                                setIsEditable(false)
-                                axios.patch(`${apiLink}shorten/users/${userDetails._id}`, {
-                                    domain: domain
-                                })
-                                setDomainValue(domain)
-                            }}>Save</Button>
-                            <Input placeholder="" w={"45%"} style={{color:"black",fontWeight:"900"}} border={"2px solid gray"} disabled={!isEditable} bgColor={!isEditable ? "gray.100" : "white"} readOnly={!isEditable} defaultValue={domain} onChange={(e) => setDomain(e.target.value)} />
                         </Box>
                     </Box>
                 </ChakraProvider>
@@ -301,7 +238,7 @@ export default function TablePage() {
                         }}><ChevronRightIcon /></Button>
                     </Box>
                 </Box>
-                <TableHeader sortAscDate={sortAscDate} sortDesDate={sortDesDate} sortAsc={sortAsc} sortDes={sortDes} />
+                <AdminTableHeader sortAsc={sortAsc} sortDes={sortDes} />
                 {loading &&
                     <Box display={"flex"} flexDir={"column"} gap={"1px"}>
 

@@ -22,9 +22,31 @@ const NavBar = () => {
     console.log();
     const { isOpen, onOpen, onClose } = useDisclosure()
     const btnRef = useRef()
-    const { setUserDetails, userDetails, isAdminLogin, setisAdminLogin } = useContext(Context);
+    const { setUserDetails, userDetails, isAdminLogin, setisAdminLogin,
+        setData,
+        setFilteredData,
+        setSelected,
+        setSalesPersonOptions,
+        setCourseOptions,
+        setCustomerNameOptions,
+        setCustomerEmailOptions,
+        setEditing,
+        setNewDataAdded,
+        setDomainValue,
+        setclickDetails,
+        setMapData,
+        setShortLimit,
+        setAllUsersData,
+        setAllUsersFilteredData,
+        setGoogleSheetDeployLink,
+        setDataLimit,
+        setPage,
+        adminUserDetails,
+        setAdminUserDetails
+
+    } = useContext(Context);
     let contact;
-    useEffect(()=>{
+    useEffect(() => {
         contact = document.getElementById("contact");
     })
     return (
@@ -36,7 +58,7 @@ const NavBar = () => {
                 </NavLink>
             </Box>
             <Button pos={"absolute"} right={"20px"} display={["flex", "flex", "flex", "none"]} ref={btnRef} bg={"transparent"} onClick={onOpen}>
-                <HamburgerIcon color={"white"} w={"30px"} h={"30px"}/>
+                <HamburgerIcon color={"white"} w={"30px"} h={"30px"} />
             </Button>
             <Drawer
                 isOpen={isOpen}
@@ -58,24 +80,45 @@ const NavBar = () => {
             </Drawer>
             <Box w={"50%"} h={"60px"} display={["none", "none", "none", "flex"]} justifyContent={"flex-end"}>
                 <Box height={"100%"} display={"flex"} gap={"20px"} alignItems={"center"} >
-                    <NavLink className={s.navHoverStyle} to={"/"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id || isAdminLogin ? "none" : "flex" }}>HOME</NavLink>
-                    <NavLink className={s.navHoverStyle} to={"//www.tnsit.in/"} target='_blank' style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id || isAdminLogin ? "none" : "flex" }}>DOMAIN</NavLink>
-                    <NavLink className={s.navHoverStyle} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: !(validPaths.includes(location.pathname)) ? "none" : userDetails._id || isAdminLogin ? "none" : "flex" }} onClick={()=>{
+                    <NavLink className={s.navHoverStyle} to={"/"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: (userDetails._id || adminUserDetails._id) || isAdminLogin ? "none" : "flex" }}>HOME</NavLink>
+                    <NavLink className={s.navHoverStyle} to={"//www.tnsit.in/"} target='_blank' style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: (userDetails._id || adminUserDetails._id) || isAdminLogin ? "none" : "flex" }}>DOMAIN</NavLink>
+                    <NavLink className={s.navHoverStyle} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: !(validPaths.includes(location.pathname)) ? "none" : (userDetails._id || adminUserDetails._id) || isAdminLogin ? "none" : "flex" }} onClick={() => {
                         contact.scrollIntoView({
                             behavior: "smooth"
                         })
                     }}>CONTACT</NavLink>
-                    <NavLink className={s.navHoverStyle} to={"/client/login"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id || isAdminLogin ? "none" : "flex" }}>LOGIN</NavLink>
-                    <NavLink className={s.navHoverStyle} to={"/client/register"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id || isAdminLogin ? "none" : "flex" }}>REGISTER</NavLink>
-                    <NavLink className={s.navHoverStyle} to={"/client/links"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: userDetails._id ? "flex" : "none" }}>Links</NavLink>
+                    <NavLink className={s.navHoverStyle} to={"/client/login"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: (userDetails._id || adminUserDetails._id) || isAdminLogin ? "none" : "flex" }}>LOGIN</NavLink>
+                    <NavLink className={s.navHoverStyle} to={"/client/register"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: (userDetails._id || adminUserDetails._id) || isAdminLogin ? "none" : "flex" }}>REGISTER</NavLink>
+                    <NavLink className={s.navHoverStyle} to={"/client/links"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: (userDetails._id) ? "flex" : "none" }}>Links</NavLink>
+                    {adminUserDetails._id && <NavLink className={s.navHoverStyle} to={"client/adminPage"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: (userDetails._id || adminUserDetails._id) ? "flex" : "none" }}>USERS</NavLink>}
+
                     <Button display={!userDetails._id ? "none" : "flex"} onClick={() => {
                         setUserDetails({})
+                        setData([])
+                        setFilteredData([])
+                        setSelected([])
+                        setSalesPersonOptions([])
+                        setCourseOptions([])
+                        setCustomerNameOptions([])
+                        setCustomerEmailOptions([])
+                        setEditing(false)
+                        setNewDataAdded(false)
+                        setDomainValue("")
+                        setclickDetails([])
+                        setMapData([])
+                        setShortLimit([])
+                        setisAdminLogin(false)
+                        setAllUsersData([])
+                        setAllUsersFilteredData([])
+                        setGoogleSheetDeployLink("")
+                        setDataLimit(10)
+                        setPage(1)
                         Cookies.set('user', JSON.stringify({}));
                     }}>
                         Logout
                     </Button>
-                    <Button display={!isAdminLogin ? "none" : "flex"} onClick={() => {
-                        setisAdminLogin(false)
+                    <Button display={!adminUserDetails._id ? "none" : "flex"} onClick={() => {
+                        setAdminUserDetails(false)
                     }}>
                         Logout
                     </Button>

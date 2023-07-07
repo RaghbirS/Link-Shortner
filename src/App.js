@@ -11,10 +11,10 @@ import { Context } from "./context";
 import Map from "./Components/TablePage/GoogleMap";
 import ForgotPassword from "./Components/forgotPassword/forgotPassword";
 import AdminLogin from "./Components/AdminLogin/AdminLogin";
-import AdminPage from "./Components/AdminPage/AdminTablePage";
 import HomePage from "./Components/HomePage/HomePage";
+import AdminTablePage from "./Components/AdminPage/TablePage";
 function App() {
-  const {socket, data, setData, userDetails, setFilteredData, toast, newDataAdded, filteredData, setShortLimit, setclickDetails, setGoogleSheetDeployLink, apiLink } = useContext(Context);
+  const {adminUserDetails, setPaginativeData,setLoading ,socket, data, setData, userDetails, setFilteredData, toast, newDataAdded, filteredData, setShortLimit, setclickDetails, setGoogleSheetDeployLink, apiLink } = useContext(Context);
   const [count, setCount] = useState(1);
   useEffect(() => {
     if (!userDetails._id) return;
@@ -28,9 +28,10 @@ function App() {
     })()
 
     axios.get(`${apiLink}shorten/AllData?userID=${userDetails._id}`).then(res => {
-      let sortedTempData = res.data.sort((a, b) => Number(b.favourite) - Number(a.favourite))
+      let sortedTempData = res.data.reverse().sort((a, b) => Number(b.favourite) - Number(a.favourite))
       setData(sortedTempData)
-      setFilteredData(sortedTempData)
+      setPaginativeData(sortedTempData)
+      setLoading(false)
     })
     axios.get(`${apiLink}shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
       setclickDetails(data)
@@ -59,6 +60,29 @@ function App() {
       })
     }
   }, [userDetails._id]);
+  useEffect(() => {
+    if (count == 1) {
+      return setCount(prev => prev + 1)
+    }
+    if (adminUserDetails._id) {
+      setTimeout(() => {
+        toast({
+          title: `Login Successful`,
+          status: "success",
+          isClosable: true,
+          position: "top",
+        })
+      }, 200);
+    }
+    else {
+      toast({
+        title: `Logout Successful`,
+        status: "success",
+        isClosable: true,
+        position: "top",
+      })
+    }
+  }, [adminUserDetails._id]);
   useEffect(() => {
     axios.get(`${apiLink}shorten/users/${userDetails._id}`).then(res => {
       setGoogleSheetDeployLink(res.data.googleSheetDeployLink || "")
@@ -116,7 +140,7 @@ function App() {
         <Route path="/client/addNewData" element={<AddNewData />} />
         <Route path="/client/login" element={<LoginPage />} />
         <Route path="/client/adminLogin" element={<AdminLogin />} />
-        <Route path="/client/adminPage" element={<AdminPage />} />
+        <Route path="/client/adminPage" element={<AdminTablePage />} />
         <Route path="/client/forgotPassword" element={<ForgotPassword />} />
         <Route path="/client/register" element={<RegisterPage />} />
 

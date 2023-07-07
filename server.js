@@ -273,7 +273,9 @@ app.delete("/shorten/AllData/:id", async (req, res) => {
 })
 app.patch("/shorten/AllData/:id", async (req, res) => {
     try {
+
         const data = req.body;
+        console.log(data)
         const id = req.params.id;
         const updatedObjet = await AllLinksModel.findOneAndUpdate({ _id: id }, data);
         res.send(`Object with ID:${id} has been deleted`);

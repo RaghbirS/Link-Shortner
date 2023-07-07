@@ -12,13 +12,14 @@ import {
 } from '@chakra-ui/react';
 import { Button } from '@chakra-ui/react';
 
-export default function BasicUsage({ onClick, funcClose, openModelFunc }) {
+export default function BasicUsage({ onClick, selected, funcClose,openModelFunc }) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     return (
         <ChakraProvider>
             <Button _hover={{ background: "#ff6868" }} color={"white"} background={"red"} onClick={() => {
-                if (openModelFunc()) onOpen()
-            }}> <DeleteIcon sx={{ mr: "10px" }} /> Delete</Button>
+                if(openModelFunc()) onOpen()
+                
+            }}> <DeleteIcon sx={{mr:"10px"}}/> Delete</Button>
 
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
@@ -35,9 +36,9 @@ export default function BasicUsage({ onClick, funcClose, openModelFunc }) {
                         }}>
                             Close
                         </Button>
-                        <Button onClick={() => {
+                        <Button onClick={()=>{
                             onClick();
-                            onClose();
+                            onClose()
                         }} _hover={{ background: "#ff6868" }} color={"white"} background={"red"} variant='ghost'>Delete</Button>
                     </ModalFooter>
                 </ModalContent>
