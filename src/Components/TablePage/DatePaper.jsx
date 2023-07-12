@@ -7,24 +7,27 @@ import {
   RangeSliderThumb,
   Text,
 } from "@chakra-ui/react";
+import { uid } from "uid";
 
-function DateRangeSlider({sliderValues,setSliderValues}) {
-  
+function DateRangeSlider({ resetKey, sliderValues, setSliderValues,sliderVal, setSliderVal }) {
+
   const [sliderMin] = useState(new Date('2022.01.01').getTime() / 1000);
   const [sliderMax] = useState(new Date().getTime() / 1000);
+  
 
   const updateInputValue = (values) => {
     const startDate = new Date(values[0] * 1000);
     const endDate = new Date(values[1] * 1000);
-    let str1 = ((startDate+"").split(" "))
-    let startDateStr = str1[2]+ "-" + str1[1]+ "-" + str1[3]
-    let str2 = ((endDate+"").split(" "))
-    let lastDateStr = str2[2]+ "-" + str2[1]+ "-" + str2[3]
+    let str1 = ((startDate + "").split(" "))
+    let startDateStr = str1[2] + "-" + str1[1] + "-" + str1[3]
+    let str2 = ((endDate + "").split(" "))
+    let lastDateStr = str2[2] + "-" + str2[1] + "-" + str2[3]
     const inputValue = `${startDateStr} - ${lastDateStr}`;
     return inputValue;
   };
 
   const handleSliderChange = (values) => {
+    setSliderVal(values)
     setSliderValues(values);
   };
 
@@ -34,10 +37,11 @@ function DateRangeSlider({sliderValues,setSliderValues}) {
         Select a date range:
       </Text>
       <RangeSlider
+        key={uid()}
         min={sliderMin}
         max={sliderMax}
         step={86400}
-        defaultValue={[sliderMin, sliderMax]}
+        value={sliderVal}
         onChange={(values) => handleSliderChange(values)}
         w={"180px"}
       >

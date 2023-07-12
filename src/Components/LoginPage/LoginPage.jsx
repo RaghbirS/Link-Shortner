@@ -39,6 +39,7 @@ export default function LoginPage() {
         setDomainValue(i.domain)
         setUserDetails(userDatails)
         Cookies.set('user', JSON.stringify(userDatails));
+        Cookies.set('admin', JSON.stringify({}));
         return
       }
     }

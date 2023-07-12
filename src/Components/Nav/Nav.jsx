@@ -119,6 +119,7 @@ const NavBar = () => {
                     </Button>
                     <Button display={!adminUserDetails._id ? "none" : "flex"} onClick={() => {
                         setAdminUserDetails(false)
+                        Cookies.set('admin', JSON.stringify({}));
                     }}>
                         Logout
                     </Button>

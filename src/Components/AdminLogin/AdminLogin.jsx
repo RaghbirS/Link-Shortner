@@ -23,6 +23,7 @@ export default function AdminLogin() {
       if (i.email === email && i.password === password) {
         if (i.isAdmin) {
           Cookies.set('admin', JSON.stringify({ _id: i._id }));
+          Cookies.set('user', JSON.stringify({}));
           setAdminUserDetails(i)
           setisAdminLogin(true)
           return

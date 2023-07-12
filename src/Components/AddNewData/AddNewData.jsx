@@ -31,7 +31,7 @@ export default function AddNewData({ onSub }) {
       shortURL: shortLink,
       remarks: remarks,
       clicks: 0,
-      domain: domainValue || "ceoitbox",
+      domain: domainValue || "",
       userID: userDetails._id,
       favourite: false,
       dateCreated: new Date()
@@ -44,7 +44,7 @@ export default function AddNewData({ onSub }) {
     onSub(obj)
   }
   useEffect(()=>{
-    setShortLink(`${apiLink}${alias}`)
+    setShortLink(`${("https://"+domainValue+"/") || apiLink}${alias}`)
   },[alias])
   if (newDataAdded) return <Navigate to={"/client/links"} />
   return (

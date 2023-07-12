@@ -11,7 +11,7 @@ function isUnderDate(values, checkDate) {
     if (checkDate >= startDate && checkDate <= endDate) return true;
     return false
 }
-
+let resetKey = 1;
 export default function Filters() {
     const { adminUserDetails, data, setFilteredData, dataLimit, shortLimit,
         page, setPage } = useContext(Context);
@@ -19,10 +19,12 @@ export default function Filters() {
     const [searchAlias, setSearchAlias] = useState("")
     const [searchShortURL, setsearchShortURL] = useState("")
     const [searchRemarks, setSearchRemarks] = useState("")
+    const [resetKey, setResetKey] = useState(1)
     const [sliderValues, setSliderValues] = useState([new Date('2022.01.01').getTime() / 1000, new Date().getTime() / 1000]);
-    const { userDetails, paginativeData, setPaginativeData,toast } = useContext(Context);
+    const { userDetails, paginativeData, setPaginativeData, toast } = useContext(Context);
+    const [sliderVal, setSliderVal] = useState([0, new Date().getTime() / 1000]);
     useEffect(() => {
-        if(adminUserDetails._id) return;
+        if (adminUserDetails._id) return;
         let temp = [];
         for (let i of paginativeData) {
             if (isUnderDate(sliderValues, new Date(i.dateCreated)) && i.longURL.includes(searchLongURL) && i.alias.includes(searchAlias) && i.shortURL.includes(searchShortURL) && i.remarks.includes(searchRemarks)) {
@@ -42,7 +44,7 @@ export default function Filters() {
 
 
                 <Box w={"300px"} position={"relative"}>
-                    <Input style={{color:"black",fontWeight:"900"}} disabled defaultValue={userDetails._id} readOnly={true} />
+                    <Input style={{ color: "black", fontWeight: "900" }} disabled defaultValue={userDetails._id} readOnly={true} />
                     <Box position={"absolute"} w={"fit-content"} h={"100%"} top={"0"} right={0}>
                         <CopyIcon onClick={async () => {
                             await navigator.clipboard.writeText(userDetails._id);
@@ -56,13 +58,14 @@ export default function Filters() {
                     </Box>
                 </Box>
 
-                <Input style={{color:"black",fontWeight:"900"}} disabled={true} w={"200px"} value={`${data.length} Links out of ${shortLimit}`} onChange={() => { }} readOnly={true} />
+                <Input style={{ color: "black", fontWeight: "900" }} disabled={true} w={"200px"} value={`${data.length} Links out of ${shortLimit}`} onChange={() => { }} readOnly={true} />
                 <Button sx={{ margin: "0 20px" }} onClick={() => {
                     setSearchLongURL("");
                     setSearchAlias("")
                     setsearchShortURL("")
                     setSearchRemarks("")
                     setSliderValues([new Date('2022.01.01').getTime() / 1000, new Date().getTime() / 1000])
+                    setSliderVal([new Date('2022.01.01').getTime() / 1000, new Date().getTime() / 1000])
                 }}>Reset</Button>
                 <Input value={searchLongURL} onChange={e => {
                     setPage(1)
@@ -80,7 +83,7 @@ export default function Filters() {
                     setPage(1)
                     setSearchRemarks(e.target.value)
                 }} w={"300"} placeholder={"Search Remarks"} />
-                <DateRangeSlider sliderValues={sliderValues} setSliderValues={setSliderValues} />
+                <DateRangeSlider sliderVal={sliderVal} setSliderVal={setSliderVal} resetKey={resetKey} sliderValues={sliderValues} setSliderValues={setSliderValues} />
             </Box>
         </Box>
     )

@@ -23,7 +23,7 @@ export default function Filters() {
         if (userDetails._id) return;
         let temp = [];
         for (let i of paginativeData) {
-            if (i.firstName.includes(firstName) && i.lastName.includes(lastName) && i.email.includes(email) && (i.domain || "").includes(domain)) {
+            if ((i.firstName || "").includes(firstName) && (i.lastName || "").includes(lastName) && (i.email || "").includes(email) && (i.domain || "").includes(domain)) {
                 temp.push(i)
             }
         }
