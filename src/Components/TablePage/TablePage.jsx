@@ -263,7 +263,7 @@ export default function TablePage() {
                                 })
                                 setDomainValue(domain)
                             }}>Save</Button>
-                            <Input placeholder="" w={"45%"} style={{color:"black",fontWeight:"900"}} border={"2px solid gray"} disabled={!isEditable} bgColor={!isEditable ? "gray.100" : "white"} readOnly={!isEditable} defaultValue={domain} onChange={(e) => setDomain(e.target.value)} />
+                            <Input placeholder="" w={"45%"} style={{color:"black",fontWeight:"900"}} border={"2px solid gray"} disabled={!isEditable} bgColor={!isEditable ? "gray.100" : "white"} readOnly={!isEditable} value={domain} onChange={(e) => setDomain(e.target.value)} />
                         </Box>
                     </Box>
                 </ChakraProvider>
@@ -317,8 +317,9 @@ export default function TablePage() {
                         <SkeletonLoading />
                     </Box>
                 }
+                
                 <Box display={"flex"} flexDir={"column"}>
-                    {
+                    {!loading &&
                         filteredData.map((i, index) => {
                             let date = new Date(i.dateCreated);
                             let str = ((date + "").split(" "))

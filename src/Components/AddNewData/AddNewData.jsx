@@ -44,7 +44,7 @@ export default function AddNewData({ onSub }) {
     onSub(obj)
   }
   useEffect(()=>{
-    setShortLink(`${("https://"+domainValue+"/") || apiLink}${alias}`)
+    setShortLink(`${("https://"+(domainValue || "tiit.co.in")+"/") || apiLink}${alias}`)
   },[alias])
   if (newDataAdded) return <Navigate to={"/client/links"} />
   return (

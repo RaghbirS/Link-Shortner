@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { Context } from "../../context";
 import DateRangeSlider from "./DatePaper";
 import { CopyIcon } from "@chakra-ui/icons";
+import { uid } from "uid";
 
 function isUnderDate(values, checkDate) {
     const startDate = new Date(values[0] * 1000);
@@ -21,10 +22,11 @@ export default function Filters() {
     const [searchRemarks, setSearchRemarks] = useState("")
     const [resetKey, setResetKey] = useState(1)
     const [sliderValues, setSliderValues] = useState([new Date('2022.01.01').getTime() / 1000, new Date().getTime() / 1000]);
-    const { userDetails, paginativeData, setPaginativeData, toast } = useContext(Context);
+    const { userDetails, paginativeData, rangeSliderReset, setRangeSliderReset, setLoading, toast } = useContext(Context);
     const [sliderVal, setSliderVal] = useState([0, new Date().getTime() / 1000]);
     useEffect(() => {
         if (adminUserDetails._id) return;
+        setLoading(true)
         let temp = [];
         for (let i of paginativeData) {
             if (isUnderDate(sliderValues, new Date(i.dateCreated)) && i.longURL.includes(searchLongURL) && i.alias.includes(searchAlias) && i.shortURL.includes(searchShortURL) && i.remarks.includes(searchRemarks)) {
@@ -37,6 +39,7 @@ export default function Filters() {
             paginatedData.push(temp[i])
         }
         setFilteredData(paginatedData)
+        setLoading(false)
     }, [searchLongURL, searchAlias, searchShortURL, searchRemarks, sliderValues, page, dataLimit, paginativeData])
     return (
         <Box h={"100%"} w={"100%"} display={"flex"} flexDir={"column"} gap={"10px"}>
@@ -66,7 +69,8 @@ export default function Filters() {
                     setSearchRemarks("")
                     setSliderValues([new Date('2022.01.01').getTime() / 1000, new Date().getTime() / 1000])
                     setSliderVal([new Date('2022.01.01').getTime() / 1000, new Date().getTime() / 1000])
-                }}>Reset</Button>
+                    setRangeSliderReset(uid())
+               }}>Reset</Button>
                 <Input value={searchLongURL} onChange={e => {
                     setPage(1)
                     setSearchLongURL(e.target.value)
@@ -83,7 +87,7 @@ export default function Filters() {
                     setPage(1)
                     setSearchRemarks(e.target.value)
                 }} w={"300"} placeholder={"Search Remarks"} />
-                <DateRangeSlider sliderVal={sliderVal} setSliderVal={setSliderVal} resetKey={resetKey} sliderValues={sliderValues} setSliderValues={setSliderValues} />
+                <DateRangeSlider sliderVal={sliderVal} setSliderVal={setSliderVal} resetKey={rangeSliderReset} sliderValues={sliderValues} setSliderValues={setSliderValues} />
             </Box>
         </Box>
     )

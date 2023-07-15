@@ -66,7 +66,7 @@ export default function TableRows({ data, userDataArr, setData, toast, date
             }
         }
         setData(temp);
-        setFilteredData(temp);
+        // setFilteredData(temp);
     }, [longURLValue, aliasValue, remarksValue, shortLinkValue])
     useEffect(() => {
         let temp = [...clickDetails];
@@ -114,11 +114,11 @@ export default function TableRows({ data, userDataArr, setData, toast, date
                     setShortLinkValue(`${apiLink}${e.target.value}`)
                 }
                 else {
-                    setShortLinkValue(`http://${domainValue}.in/${e.target.value}`)
+                    setShortLinkValue(`http://${domainValue}/${e.target.value}`)
                 }
             }} borderRadius={"none"} h={"40px"} value={aliasValue} border={"2px solid #dee2e6"}></Input>
             <Box w={"20%"} position={"relative"}>
-                <Input position={"absolute"} flexShrink={0} w={"100%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={true} onChange={(e) => (e.target.value)} borderRadius={"none"} h={"40px"} defaultValue={shortLinkValue} border={"2px solid #dee2e6"}>{ }</Input>
+                <Input position={"absolute"} flexShrink={0} w={"100%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={true} onChange={(e) => console.log(e.target.value)} borderRadius={"none"} h={"40px"} value={shortLinkValue} border={"2px solid #dee2e6"}>{ }</Input>
                 <Box position={"absolute"} w={"fit-content"} h={"100%"} right={0}>
                     <CopyIcon onClick={async () => {
                         await navigator.clipboard.writeText(shortLinkValue);

@@ -37,7 +37,7 @@ function DateRangeSlider({ resetKey, sliderValues, setSliderValues,sliderVal, se
         Select a date range:
       </Text>
       <RangeSlider
-        key={uid()}
+        key={resetKey}
         min={sliderMin}
         max={sliderMax}
         step={86400}

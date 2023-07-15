@@ -2,6 +2,7 @@ import { useToast } from "@chakra-ui/react";
 import { createContext, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import { io } from "socket.io-client";
+import { uid } from "uid";
 export let Context = createContext();
 let apiLink = "http://localhost:3001/";
 if (document.location.href.includes("localhost")) {
@@ -43,6 +44,7 @@ export default function ContextProvider({ children }) {
   if (admin) admin = JSON.parse(admin)
   else admin = {}
   const [adminUserDetails, setAdminUserDetails] = useState(admin);
+  const [rangeSliderReset, setRangeSliderReset] = useState(uid());
   return (
     <Context.Provider
       value={{
@@ -71,7 +73,8 @@ export default function ContextProvider({ children }) {
         loading, setLoading,
         paginativeData, setPaginativeData,
         unselect, setUnselect,
-        adminUserDetails, setAdminUserDetails
+        adminUserDetails, setAdminUserDetails,
+        rangeSliderReset, setRangeSliderReset
       }}>
       {children}
     </Context.Provider>
