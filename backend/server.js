@@ -23,6 +23,8 @@ const { connection,
     UserModel,
     AllLinksModel, ClickDataModel, MessagesDataModel } = require("./db");
 const { default: axios } = require('axios');
+const { getStructuredData } = require('./backupDB');
+
 
 app.use(express.json({ limit: '50mb' }))
 app.use(express.static("build"));
@@ -69,45 +71,30 @@ app.post("/shortenLink/:id", async (req, res) => {
 
 
 
-// _id: uid(24),
-//     longURL: longURL,
-//         alias: alias,
-//             shortURL: shortLink,
-//                 remarks: remarks,
-//                     clicks: 0,
-//                         domain: domainValue || "ceoitbox",
-//                             userID: userDetails._id,
-//                                 favourite: false,
-//                                     dateCreated: new Date()
-
-
-
-
-
-app.get("/",(req, res)=>{
+app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "build", "index.html"));
 })
+app.get("/client/:route", (req, res) => {
+    res.sendFile(path.join(__dirname, "build", "index.html"));
+})
+
+
+
 
 app.get("/:alias", async (req, res) => {
     const alias = req.params.alias;
     try {
-        
-        const data = await AllLinksModel.find();
-        let longURL = "";
-        // const domain = `${url.parse(req.protocol + '://' + req.get('host')).hostname}`;
-        // const domain = `http://${req.get("Host")}/${alias}`;
-        const domain = `http://${req.get("Host")}/${alias}`;
-        // console.log(domain)
-        console.log()
+        const domain = `https://${req.get("Host")}/${alias}`;
+        const data = await AllLinksModel.findOne({ shortURL: domain });
+
+        if (!data) {
+            return res.send({ domain })
+        }
         let ipAddress = req.ipInfo.ip.split(",")
         let geo = geoip.lookup(ipAddress[0]);
-        console.log(ipAddress[0])
-        console.log(geo)
         let info = platform.parse(req.headers["user-agent"]);
         let country = geo ? geo.country : "Unknown";
-        let region = geo ? geo.region : "Unknown";
         let city = geo ? geo.city : "Unknown";
-        let timezone = geo ? geo.timezone : "Unknown";
         let latitude = geo ? geo.ll[0] : "Unknown";
         let logitude = geo ? geo.ll[1] : "Unknown";
 
@@ -121,43 +108,49 @@ app.get("/:alias", async (req, res) => {
             userID: "",
             shortURL: domain
         };
-        for (let i of data) {
-            console.log(i.shortURL == domain)
-            console.log(i.shortURL,domain)
-            if (i.shortURL == domain) {
-                longURL = i.longURL;
-                let obj = {
-                    clicks: i.clicks + 1
-                }
-                await AllLinksModel.findOneAndUpdate({ _id: i._id }, obj);
-                result.userID = i.userID;
-                let newData = new ClickDataModel(result);
-                await newData.save()
-                let tempUserData = await UserModel.find({_id:i.userID});
-                console.log(result)
-                const form_ = new FormData();
-                form_.append("country", result.country) ;
-                form_.append("city", result.city) ;
-                form_.append("latitude", result.latitude) ;
-                form_.append("logitude",result.longitude ) ;
-                form_.append("os_name", result.os) ;
-                form_.append("browser", result.browser) ;
-                form_.append("shortURL", result.shortURL) ;
-                form_.append("userID", result.userID) ;
 
-                if(tempUserData[0].googleSheetDeployLink){
-                    axios.post(tempUserData[0].googleSheetDeployLink,form_)
-                }
-                io.emit('newClick', { result, obj });
-                res.redirect(longURL)
-                return
-            }
+        let obj = {
+            clicks: data.clicks + 1
         }
-        res.send({ domain })
+        await AllLinksModel.findOneAndUpdate({ _id: data._id }, obj);
+        result.userID = data.userID;
+        let newData = new ClickDataModel(result);
+        await newData.save()
+        let tempUserData = await UserModel.find({ _id: data.userID });
+
+        const form_ = new FormData();
+        form_.append("country", result.country);
+        form_.append("city", result.city);
+        form_.append("latitude", result.latitude);
+        form_.append("logitude", result.longitude);
+        form_.append("os_name", result.os);
+        form_.append("browser", result.browser);
+        form_.append("shortURL", result.shortURL);
+        form_.append("userID", result.userID);
+
+        if (tempUserData[0].googleSheetDeployLink) {
+            axios.post(tempUserData[0].googleSheetDeployLink, form_)
+        }
+        io.emit('newClick', { result, obj });
+        const externalLink = /^https?:\/\//.test(data.longURL) ? data.longURL : `http://${data.longURL}`;
+        res.redirect(externalLink)
 
     } catch (err) {
         console.log(err)
     }
+})
+
+// New URL create Unique Check EndPoint
+app.post("/shorten/uniqueCheck", async (req, res) => {
+    try {
+
+        const data = await AllLinksModel.findOne({ shortURL: req.body.URL })
+        res.send({ isUnique: !data })
+    }
+    catch (err) {
+        console.log(err)
+    }
+
 })
 
 // UserModel EndPoint
@@ -187,7 +180,7 @@ app.post("/shorten/users", async (req, res) => {
     try {
         const data = req.body;
         const database = new UserModel(data);
-        
+
         console.log(await database.save())
         res.send(data)
     }
@@ -343,7 +336,7 @@ app.patch("/shorten/clicks/:id", async (req, res) => {
 
 })
 
-app.get("/shorten/licenceCheck", async (req, res) => {
+app.post("/shorten/licenceCheck", async (req, res) => {
     const { email } = req.body;
     const response = await got(
         "http://auth.ceoitbox.com/checkauth/CBX1221SURL01/" +
@@ -363,6 +356,7 @@ app.get("/shorten/licenceCheck", async (req, res) => {
     } else {
         limit = 500;
     }
+
     res.send({ limit })
 })
 
@@ -402,12 +396,12 @@ app.post("/shorten/sendOtp", async (req, res) => {
             auth: {
                 // user: 'apps@ceoitbox.in',
                 // pass: 'xnhrwhxmpkamzawt'
-                user: 'raghbir@ceoitbox.in',
-                pass: 'wzqjqigcjndowund'
+                user: 'apps@ceoitbox.com',
+                pass: 'bdrafmwnojwxijuu'
             }
         });
         const mailOptions = {
-            from: 'apps@ceoitbox.in',
+            from: 'apps@ceoitbox.com',
             to: email,
             subject: 'OTP',
             text: 'Your CBXITBOX OTP is ' + OTP
@@ -424,6 +418,7 @@ app.post("/shorten/sendOtp", async (req, res) => {
         console.log(err)
     }
 })
+
 app.post("/shorten/send/email", async (req, res) => {
 
     const { name, email, message } = req.body;
@@ -434,8 +429,6 @@ app.post("/shorten/send/email", async (req, res) => {
         auth: {
             user: 'raghbir@ceoitbox.in',
             pass: 'wzqjqigcjndowund'
-            // user: 'apps@ceoitbox.in',
-            // pass: 'xnhrwhxmpkamzawt'
         }
     });
     const mailOptions1 = {
