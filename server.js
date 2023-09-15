@@ -100,7 +100,7 @@ app.get("/:alias", async (req, res) => {
         // const domain = `${url.parse(req.protocol + '://' + req.get('host')).hostname}`;
         // const domain = `http://${req.get("Host")}/${alias}`;
         const domain = `http://${req.get("Host")}/${alias}`;
-        // console.log(domain)
+        console.log(domain)
         let ipAddress = req.ipInfo.ip.split(",")
         let geo = geoip.lookup(ipAddress[0]);
         console.log(ipAddress[0])

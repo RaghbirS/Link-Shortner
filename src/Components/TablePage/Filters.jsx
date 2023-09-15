@@ -8,7 +8,7 @@ import { uid } from "uid";
 
 function isUnderDate(values, checkDate) {
     const startDate = new Date(values[0] * 1000);
-    const endDate = new Date(values[1] * 1001);
+    const endDate = new Date(values[1] * 1000.1);
     if (checkDate >= startDate && checkDate <= endDate) return true;
     return false
 }

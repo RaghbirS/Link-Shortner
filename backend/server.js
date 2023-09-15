@@ -84,9 +84,10 @@ app.get("/client/:route", (req, res) => {
 app.get("/:alias", async (req, res) => {
     const alias = req.params.alias;
     try {
-        const domain = `https://${req.get("Host")}/${alias}`;
-        const data = await AllLinksModel.findOne({ shortURL: domain });
-
+        const domain = `${req.get("Host")}/${alias}`;
+        // const data = await AllLinksModel.findOne({ shortURL: domain });
+        const data = await AllLinksModel.findOne({ shortURL: { $regex: domain, $options: "i" } });
+        console.log(domain, data)
         if (!data) {
             return res.send({ domain })
         }

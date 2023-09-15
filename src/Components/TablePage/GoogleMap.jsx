@@ -1,6 +1,6 @@
 import GoogleMapReact from 'google-map-react';
 import p from "./pointer.png"
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { Context } from '../../context';
 function SimpleMap() {
   const {mapData, setMapData} = useContext(Context);
@@ -20,11 +20,59 @@ function SimpleMap() {
     },
     mapTypeId: 'satellite',
   };
+
+  useEffect(()=>{
+    let map;
+
+    function initMap() {
+      const mapOptions = {
+          zoom: 7,
+          center: {
+            lat: Number(mapData[0].latitude),
+            lng: Number(mapData[0].longitude)
+        },
+      };
+  
+      let alias = document.getElementById("map").getAttribute("al");
+  
+      const map = new window.google.maps.Map(document.getElementById("map"), mapOptions);
+      
+      mapData.forEach((data) => {
+          if (data.latitude !== "Unknown" && data.longitude !== "Unknown") {
+              const marker = new window.google.maps.Marker({
+                  position: {
+                      lat: Number(data.latitude),
+                      lng: Number(data.longitude)
+                  },
+                  map: map,
+                  icon: {
+                      url: p, // Provide the correct path to your pointer.png
+                      scaledSize: new window.google.maps.Size(50, 50)
+                  }
+              });
+  
+              const infowindow = new window.google.maps.InfoWindow({
+                  content: "<p>Marker Location: " + marker.getPosition() + "</p>",
+              });
+  
+              marker.addListener("click", () => {
+                  infowindow.open(map, marker);
+              });
+          }
+      });
+  }
+  
+      initMap()
+
+
+  },[])
   return (
-    <div style={{ height: '100vh', width: '100%' }}>
+    <div id='map' style={{ height: '100vh', width: '100%' }}>
+
       <GoogleMapReact
         bootstrapURLKeys={{ key: "AIzaSyBiLWEqbEv65Bjtyy9BZ2C09aMratx6Juc" }}
         defaultCenter={defaultProps.center}
+        yesIWantToUseGoogleMapApiInternals
         defaultZoom={defaultProps.zoom}
         options={mapOptions}
       >

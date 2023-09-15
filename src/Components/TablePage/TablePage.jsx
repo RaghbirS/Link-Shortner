@@ -100,7 +100,7 @@ export default function TablePage() {
                             {/* </B> */}
                             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description" > <ModalOverlay />
                                 <ModalContent>
-                                    <AddNewData onClose={() => setIsModalOpen(false)} onSub={async (obj) => {
+                                    <AddNewData onClose={() => setIsModalOpen(false)} onSub={async (obj, setLoading) => {
 
                                         if (data.length > shortLimit) {
                                             return toast({
@@ -118,19 +118,17 @@ export default function TablePage() {
                                                 position: "top"
                                             })
                                         }
-                                        let tempAllData = await axios.get(`${apiLink}shorten/AllData`);
-                                        tempAllData = tempAllData.data;
-                                        for (let i of tempAllData) {
-                                            if (i.shortURL == obj.shortURL) {
-                                                return toast({
-                                                    title: `The alias is already being used on the same domain`,
-                                                    status: "error",
-                                                    isClosable: true,
-                                                    position: "top"
-                                                })
-                                            }
+                                        setLoading(true)
+                                        let tempAllData = await axios.post(`${apiLink}shorten/uniqueCheck`, { URL: obj.shortURL });
+                                        if (!tempAllData.data.isUnique) {
+                                            setLoading(false)
+                                            return toast({
+                                                title: `The alias is already being used on the same domain`,
+                                                status: "error",
+                                                isClosable: true,
+                                                position: "top"
+                                            })
                                         }
-
                                         axios.post(`${apiLink}shorten/AllData`, obj)
                                         let tempData = [obj, ...data].sort((a, b) => Number(b.favourite) - Number(a.favourite))
                                         setData(tempData)
@@ -141,6 +139,7 @@ export default function TablePage() {
                                             isClosable: true,
                                             position: "top"
                                         })
+                                        setLoading(false)
                                         setIsModalOpen(false)
                                     }} />
                                 </ModalContent>
@@ -263,7 +262,7 @@ export default function TablePage() {
                                 })
                                 setDomainValue(domain)
                             }}>Save</Button>
-                            <Input placeholder="" w={"45%"} style={{color:"black",fontWeight:"900"}} border={"2px solid gray"} disabled={!isEditable} bgColor={!isEditable ? "gray.100" : "white"} readOnly={!isEditable} value={domain} onChange={(e) => setDomain(e.target.value)} />
+                            <Input placeholder="" w={"45%"} style={{ color: "black", fontWeight: "900" }} border={"2px solid gray"} disabled={!isEditable} bgColor={!isEditable ? "gray.100" : "white"} readOnly={!isEditable} value={domain} onChange={(e) => setDomain(e.target.value)} />
                         </Box>
                     </Box>
                 </ChakraProvider>
@@ -285,9 +284,8 @@ export default function TablePage() {
                             setDataLimit(+target.value)
                         }}>
                             <option value={10}>10</option>
-                            <option value={20}>20</option>
-                            <option value={30}>30</option>
-                            <option value={40}>40</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
                         </Select>
                         <Button onClick={() => {
                             if (page > 1) {
@@ -317,8 +315,8 @@ export default function TablePage() {
                         <SkeletonLoading />
                     </Box>
                 }
-                
-                <Box display={"flex"} flexDir={"column"}>
+
+                <Box display={"flex"} flexDir={"column"} overflowY={"scroll"} h={"48vh"}>
                     {!loading &&
                         filteredData.map((i, index) => {
                             let date = new Date(i.dateCreated);

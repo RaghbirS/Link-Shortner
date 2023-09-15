@@ -19,7 +19,7 @@ const TableHeader = ({ sortAsc, sortDes, sortAscDate, sortDesDate }) => {
         arr = document.querySelectorAll(".select");
     })
     return (
-        <Box display={"flex"} minW={"100%"} position={"relative"}>
+        <Box display={"flex"} minW={"100%"} position={"relative"} overflowY={"scroll"}>
 
             <Box display={"flex"} justifyContent={"center"} alignItems={"center"} flexShrink={0} cursor={"pointer"} borderRadius={"none"} bg={"#edf2fa"} h={"40px"} w={"6%"} border={"1px solid #dee2e6"} fontSize={"12px"} fontWeight={"900"} onClick={() => {
                 let value = !selectAll;

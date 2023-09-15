@@ -13,17 +13,20 @@ import ForgotPassword from "./Components/forgotPassword/forgotPassword";
 import AdminLogin from "./Components/AdminLogin/AdminLogin";
 import HomePage from "./Components/HomePage/HomePage";
 import AdminTablePage from "./Components/AdminPage/TablePage";
+import { Progress } from "@chakra-ui/react";
 function App() {
-  const {adminUserDetails, setPaginativeData,setLoading ,socket, data, setData, userDetails, setFilteredData, toast, newDataAdded, filteredData, setShortLimit, setclickDetails, setGoogleSheetDeployLink, apiLink } = useContext(Context);
+  const {loading, adminUserDetails, setPaginativeData, setLoading, socket, data, setData, userDetails, setFilteredData, toast, newDataAdded, filteredData, setShortLimit, setclickDetails, setGoogleSheetDeployLink, apiLink } = useContext(Context);
   const [count, setCount] = useState(1);
   useEffect(() => {
     if (!userDetails._id) return;
 
     (async () => {
-      let response = await axios.get(apiLink+"shorten/licenceCheck", {
+      let response = await axios.post(apiLink + "shorten/licenceCheck", {
         email: userDetails.email
       });
+      console.log(userDetails.email)
       response = response.data;
+      console.log(response)
       setShortLimit(response.limit)
     })()
 
@@ -107,7 +110,7 @@ function App() {
 
   useEffect(() => {
     if (!userDetails._id) return;
-    
+
     socket.on("newClick", res => {
       let tempData = [...data];
       let tempFilteredData = [...filteredData];
@@ -132,6 +135,8 @@ function App() {
 
   return (
     <div className="App">
+      {loading && <Progress zIndex={9999} colorScheme={"orange"} height='5px' isIndeterminate />}
+
       <NavBar />
       <Routes>
         <Route path="/" element={<HomePage />} />

@@ -4,12 +4,12 @@ import Cookies from 'js-cookie';
 import { io } from "socket.io-client";
 import { uid } from "uid";
 export let Context = createContext();
-let apiLink = "http://localhost:3001/";
-if (document.location.href.includes("localhost")) {
-  apiLink = "http://localhost:3001/";
-} else {
-  apiLink = "https://tiit.co.in/";
-}
+let apiLink = "https://cbxit.in/";
+// if (document.location.href.includes("localhost")) {
+//   apiLink = "http://localhost:3001/";
+// } else {
+//   apiLink = "https://cbxit.in/";
+// }
 
 const socket = io(apiLink);
 export default function ContextProvider({ children }) {
@@ -37,7 +37,7 @@ export default function ContextProvider({ children }) {
   const toast = useToast()
   const [dataLimit, setDataLimit] = useState(10);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [paginativeData, setPaginativeData] = useState([])
   const [unselect, setUnselect] = useState([]);
   let admin = Cookies.get('admin');

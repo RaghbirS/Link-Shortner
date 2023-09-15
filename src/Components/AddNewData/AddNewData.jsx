@@ -18,17 +18,16 @@ export default function AddNewData({ onSub }) {
   const [longURL, setLongURL] = useState("")
   const [alias, setAlias] = useState("")
   const [remarks, setRemarks] = useState("")
-  const { data, setData, newDataAdded, userDetails, setNewDataAdded, setFilteredData, domainValue, toast,
+  const { data, setData, newDataAdded, userDetails, setLoading, setFilteredData, domainValue, toast,
     shortLimit, apiLink } = useContext(Context);
-    const [shortLink, setShortLink] = useState(apiLink)
+  const [shortLink, setShortLink] = useState(apiLink);
 
   async function handleSubmit() {
-
     let obj = {
       _id: uid(24),
       longURL: longURL,
       alias: alias,
-      shortURL: shortLink,
+      shortURL: shortLink.toLowerCase(),
       remarks: remarks,
       clicks: 0,
       domain: domainValue || "",
@@ -41,11 +40,11 @@ export default function AddNewData({ onSub }) {
       obj.alias = temp;
       obj.shortURL = obj.shortURL + temp;
     }
-    onSub(obj)
+    onSub(obj, setLoading)
   }
-  useEffect(()=>{
-    setShortLink(`${("https://"+(domainValue || "tiit.co.in")+"/") || apiLink}${alias}`)
-  },[alias])
+  useEffect(() => {
+    setShortLink(`${("https://" + (domainValue || "cbxit.in") + "/") || apiLink}${alias}`)
+  }, [alias])
   if (newDataAdded) return <Navigate to={"/client/links"} />
   return (
     <Flex
