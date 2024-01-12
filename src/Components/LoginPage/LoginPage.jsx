@@ -8,7 +8,7 @@ import {
   Button,
   Heading
 } from '@chakra-ui/react';
-import axios from 'axios';
+// import axios from 'axios';
 import { useContext, useState } from 'react';
 import { NavLink, Navigate } from 'react-router-dom';
 import { Context } from '../../context';
@@ -16,39 +16,63 @@ import Cookies from 'js-cookie';
 
 
 export default function LoginPage() {
-  const { userDetails, setUserDetails, toast, setDomainValue, apiLink } = useContext(Context);
+  const {axios, userDetails, setUserDetails, toast, setDomainValue, apiLink, token, setToken } = useContext(Context);
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showError, setShowError] = useState(false)
   async function login() {
     setShowError(true)
-    let data = await axios.get(`${apiLink}shorten/users`);
-    data = data.data;
-    for (let i of data) {
-      if (i.email === email) {
-        if (i.password != password) return toast({
-          title: `Incorrect Password`,
-          status: "error",
-          isClosable: true,
-          position: "top",
-        })
-        let userDatails = {
-          email,
-          _id: i._id
-        }
-        setDomainValue(i.domain)
-        setUserDetails(userDatails)
-        Cookies.set('user', JSON.stringify(userDatails));
-        Cookies.set('admin', JSON.stringify({}));
-        return
-      }
-    }
-    toast({
-      title: `User does not exist`,
+
+    let { data: res } = await axios.post(`${apiLink}api/signin`, {
+      email, password
+    });
+    console.log()
+    if (res.error) return toast({
+      title: res.error,
       status: "error",
       isClosable: true,
       position: "top",
     })
+    setToken(res.token)
+    Cookies.set('token', JSON.stringify(res.token));
+    let userDatails = {
+      email,
+      _id: res.body._id
+    }
+    setDomainValue(res.body.domain)
+    setUserDetails(res.body)
+    Cookies.set('user', JSON.stringify(userDatails));
+    Cookies.set('admin', JSON.stringify({}));
+
+
+
+    // let data = await axios.get(`${apiLink}shorten/users`);
+    // data = data.data;
+    // for (let i of data) {
+    //   if (i.email === email) {
+    //     if (i.password != password) return toast({
+    //       title: `Incorrect Password`,
+    //       status: "error",
+    //       isClosable: true,
+    //       position: "top",
+    //     })
+    //     let userDatails = {
+    //       email,
+    //       _id: i._id
+    //     }
+    //     setDomainValue(i.domain)
+    //     setUserDetails(userDatails)
+    //     Cookies.set('user', JSON.stringify(userDatails));
+    //     Cookies.set('admin', JSON.stringify({}));
+    //     return
+    //   }
+    // }
+    // toast({
+    //   title: `User does not exist`,
+    //   status: "error",
+    //   isClosable: true,
+    //   position: "top",
+    // })
   }
   function isValidEmail() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

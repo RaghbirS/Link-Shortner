@@ -8,7 +8,7 @@ import {
   Button,
   Heading,
 } from '@chakra-ui/react';
-import axios from 'axios';
+// import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { uid } from 'uid';
@@ -18,11 +18,12 @@ export default function AddNewData({ onSub }) {
   const [longURL, setLongURL] = useState("")
   const [alias, setAlias] = useState("")
   const [remarks, setRemarks] = useState("")
-  const { data, setData, newDataAdded, userDetails, setLoading, setFilteredData, domainValue, toast,
+  const { axios, data, setData, newDataAdded, userDetails, setLoading, setFilteredData, domainValue, toast,
     shortLimit, apiLink } = useContext(Context);
   const [shortLink, setShortLink] = useState(apiLink);
 
   async function handleSubmit() {
+
     let obj = {
       _id: uid(24),
       longURL: longURL,

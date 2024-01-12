@@ -22,7 +22,7 @@ const NavBar = () => {
     console.log();
     const { isOpen, onOpen, onClose } = useDisclosure()
     const btnRef = useRef()
-    const { setUserDetails, userDetails, isAdminLogin, setisAdminLogin,
+    const { setUserDetails, userDetails, isAdminLogin, setisAdminLogin,setShortLimit,
         setData,
         setFilteredData,
         setSelected,
@@ -35,7 +35,6 @@ const NavBar = () => {
         setDomainValue,
         setclickDetails,
         setMapData,
-        setShortLimit,
         setAllUsersData,
         setAllUsersFilteredData,
         setGoogleSheetDeployLink,
@@ -106,7 +105,7 @@ const NavBar = () => {
                         setDomainValue("")
                         setclickDetails([])
                         setMapData([])
-                        setShortLimit([])
+                        setShortLimit(0)
                         setisAdminLogin(false)
                         setAllUsersData([])
                         setAllUsersFilteredData([])

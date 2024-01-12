@@ -16,11 +16,11 @@ import { useContext, useState } from 'react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { NavLink, Navigate } from 'react-router-dom';
 
-import axios from 'axios';
+// import axios from 'axios';
 import { Context } from '../../context';
 
 export default function RegisterPage() {
-  const { toast, apiLink } = useContext(Context);
+  const { axios,toast, apiLink } = useContext(Context);
   const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
@@ -34,8 +34,8 @@ export default function RegisterPage() {
   const [submited, setSubmited] = useState(false);
   const [isOtpSent, setIsOtpSent] = useState(false);
 
-  function handleSubmit() {
-    if((!isOtpVerified) || (!isValidEmail()) || (password.length < 8) || (!firstName || !lastName) ) {
+  async function handleSubmit() {
+    if ((!isOtpVerified) || (!isValidEmail()) || (password.length < 8) || (!firstName || !lastName)) {
       setShowError(true)
     }
     if (!isOtpVerified) return toast({
@@ -62,21 +62,27 @@ export default function RegisterPage() {
       isClosable: true,
       position: "top",
     })
-    
+
     let obj = {
       firstName,
       lastName,
       email,
       password,
-      domain:""
+      domain: ""
     }
-    axios.post(`${apiLink}shorten/users`, obj);
+    let { data: res } = await axios.post(`${apiLink}shorten/register`, obj);
+    if (res.error) return toast({
+      title: res.error,
+      status: "error",
+      isClosable: true,
+      position: "top",
+    })
     setFirstName("")
     setLastName("")
     setEmail("")
     setPassword("")
     setSubmited(true);
-    setTimeout(()=>setSubmited(false),1000)
+    setTimeout(() => setSubmited(false), 1000)
   }
   function isValidEmail() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -119,8 +125,9 @@ export default function RegisterPage() {
                     isClosable: true,
                     position: "top",
                   })
-                  let { data } = await axios.get(`${apiLink}shorten/users?email=${email}`);
-                  if (data.length == 1) {
+                  let { data:res } = await axios.post(`${apiLink}shorten/userExists`, { email });
+                  console.log(res)
+                  if (!res.isUnique) {
                     return toast({
                       title: `User already exist`,
                       status: "error",
@@ -139,7 +146,6 @@ export default function RegisterPage() {
                     });
                   }, 1000)
 
-              
                   axios.post(`${apiLink}shorten/sendOtp`, { email }).then(res => setVerificationOtp(res.data + ""));
                   setIsOtpSent(true)
                   toast({
@@ -149,6 +155,7 @@ export default function RegisterPage() {
                     position: "top",
                   })
                 }}>{sendText()}</Button>
+                
             </Box>
             <Box display={"flex"} gap={"20px"} alignItems={"flex-end"}>
               <FormControl id="otp" isRequired>
@@ -157,7 +164,7 @@ export default function RegisterPage() {
               </FormControl>
               <Button disabled={isOtpVerified} onClick={() => {
                 console.log(verificationOtp, inputOtp)
-                if(!isOtpSent) return toast({
+                if (!isOtpSent) return toast({
                   title: `Please send the OTP first.`,
                   status: "warning",
                   isClosable: true,
@@ -196,22 +203,22 @@ export default function RegisterPage() {
               </Box>
             </HStack>
 
-            <FormControl display={isOtpVerified ? "block" : "none"} id="password" isRequired>
-              <FormLabel>Password</FormLabel>
-              <InputGroup>
-                <Input _focus={{ border: password.length < 8 && showError ? "2px solid red" : "2px solid #e2e8f0" }} border={password.length < 8 && showError ? "2px solid red" : "2px solid #e2e8f0"} value={password} onChange={(e) => setPassword(e.target.value)} type={showPassword ? 'text' : 'password'} />
-                <InputRightElement h={'full'}>
-                  <Button
-                    bg={"transparent"}
-                    _hover={{ bg: "transparent" }}
-                    onClick={() =>
-                      setShowPassword((showPassword) => !showPassword)
-                    }>
-                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-            </FormControl></>}
+              <FormControl display={isOtpVerified ? "block" : "none"} id="password" isRequired>
+                <FormLabel>Password</FormLabel>
+                <InputGroup>
+                  <Input _focus={{ border: password.length < 8 && showError ? "2px solid red" : "2px solid #e2e8f0" }} border={password.length < 8 && showError ? "2px solid red" : "2px solid #e2e8f0"} value={password} onChange={(e) => setPassword(e.target.value)} type={showPassword ? 'text' : 'password'} />
+                  <InputRightElement h={'full'}>
+                    <Button
+                      bg={"transparent"}
+                      _hover={{ bg: "transparent" }}
+                      onClick={() =>
+                        setShowPassword((showPassword) => !showPassword)
+                      }>
+                      {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+              </FormControl></>}
             <Stack spacing={10} pt={2}>
 
               <Button

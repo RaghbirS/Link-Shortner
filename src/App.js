@@ -1,4 +1,4 @@
-import axios from "axios";
+// import axios from "./HTTP";
 import { useContext, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom"
 import AddNewData from "./Components/AddNewData/AddNewData";
@@ -15,31 +15,67 @@ import HomePage from "./Components/HomePage/HomePage";
 import AdminTablePage from "./Components/AdminPage/TablePage";
 import { Progress } from "@chakra-ui/react";
 function App() {
-  const {loading, adminUserDetails, setPaginativeData, setLoading, socket, data, setData, userDetails, setFilteredData, toast, newDataAdded, filteredData, setShortLimit, setclickDetails, setGoogleSheetDeployLink, apiLink } = useContext(Context);
+  const { shortLimit, token, axios, loading, adminUserDetails, setPaginativeData, setLoading, socket, data, setData, userDetails, setFilteredData, toast, newDataAdded, filteredData, setShortLimit, setclickDetails, setGoogleSheetDeployLink, apiLink } = useContext(Context);
   const [count, setCount] = useState(1);
+
   useEffect(() => {
     if (!userDetails._id) return;
+    if (!token) return;
+    try {
+      (async () => {
+        let { data: res } = await axios.get(apiLink + "shorten/users/" + userDetails._id);
+        console.log(res)
+        if (res.createLimit != undefined) {
+          let prevCreateLimitDate = new Date(res.createLimitDate);
+          console.log(prevCreateLimitDate)
+          prevCreateLimitDate.setDate(prevCreateLimitDate.getDate() + 1);
 
-    (async () => {
-      let response = await axios.post(apiLink + "shorten/licenceCheck", {
-        email: userDetails.email
-      });
-      console.log(userDetails.email)
-      response = response.data;
-      console.log(response)
-      setShortLimit(response.limit)
-    })()
+          const today = new Date();
+          if (today > prevCreateLimitDate) {
+            let response = await axios.post(apiLink + "shorten/licenceCheck", {
+              email: userDetails.email
+            });
+            response = response.data;
+            console.log(response)
+            setShortLimit(response.limit)
+            let temp = await axios.patch(apiLink + "shorten/users/" + userDetails._id, {
+              createLimit: response.limit,
+              createLimitDate: new Date()
+            })
+          }
+          else setShortLimit(res.createLimit)
+        }
+        else {
+          let response = await axios.post(apiLink + "shorten/licenceCheck", {
+            email: userDetails.email
+          });
+          response = response.data;
+          setShortLimit(response.limit)
+          let temp = await axios.patch(apiLink + "shorten/users/" + userDetails._id, {
+            createLimit: response.limit,
+            createLimitDate: new Date()
+          })
+          console.log(temp)
+        }
 
-    axios.get(`${apiLink}shorten/AllData?userID=${userDetails._id}`).then(res => {
-      let sortedTempData = res.data.reverse().sort((a, b) => Number(b.favourite) - Number(a.favourite))
-      setData(sortedTempData)
-      setPaginativeData(sortedTempData)
-      setLoading(false)
-    })
-    axios.get(`${apiLink}shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
-      setclickDetails(data)
-    })
-  }, [userDetails._id])
+      })()
+
+      axios.get(`${apiLink}shorten/AllData?userID=${userDetails._id}`).then(res => {
+
+        let sortedTempData = res.data.reverse().sort((a, b) => Number(b.favourite) - Number(a.favourite))
+        setData(sortedTempData)
+        setPaginativeData(sortedTempData)
+        setLoading(false)
+      })
+      axios.get(`${apiLink}shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
+
+        setclickDetails(data)
+      })
+    } catch (error) {
+      console.log(error)
+    }
+
+  }, [userDetails._id, token])
   useEffect(() => {
     if (count == 1) {
       return setCount(prev => prev + 1)
@@ -87,10 +123,12 @@ function App() {
     }
   }, [adminUserDetails._id]);
   useEffect(() => {
+    if (!userDetails._id) return;
+    if (!token) return;
     axios.get(`${apiLink}shorten/users/${userDetails._id}`).then(res => {
       setGoogleSheetDeployLink(res.data.googleSheetDeployLink || "")
     })
-  }, [])
+  }, [token])
 
   useEffect(() => {
     if (count == 1) {

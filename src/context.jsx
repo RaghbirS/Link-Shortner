@@ -3,20 +3,26 @@ import { createContext, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import { io } from "socket.io-client";
 import { uid } from "uid";
+import HTTP from "./HTTP";
 export let Context = createContext();
 let apiLink = "https://cbxit.in/";
-// if (document.location.href.includes("localhost")) {
-//   apiLink = "http://localhost:3001/";
-// } else {
-//   apiLink = "https://cbxit.in/";
-// }
+if (document.location.href.includes("localhost")) {
+  apiLink = "http://localhost:3001/";
+} else {
+  apiLink = "https://cbxit.in/";
+}
 
 const socket = io(apiLink);
 export default function ContextProvider({ children }) {
+  
   let user = Cookies.get('user');
   if (user) user = JSON.parse(user)
   else user = {}
   let [data, setData] = useState([]);
+  let toke = Cookies.get('token')
+  if (toke) toke = JSON.parse(toke)
+  else toke = ""
+  let [token, setToken] = useState(toke);
   let [filteredData, setFilteredData] = useState([]);
   let [selected, setSelected] = useState([]);
   const [userDetails, setUserDetails] = useState(user);
@@ -35,7 +41,7 @@ export default function ContextProvider({ children }) {
   const [allUsersFilteredData, setAllUsersFilteredData] = useState([])
   const [googleSheetDeployLink, setGoogleSheetDeployLink] = useState("")
   const toast = useToast()
-  const [dataLimit, setDataLimit] = useState(10);
+  const [dataLimit, setDataLimit] = useState(40);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [paginativeData, setPaginativeData] = useState([])
@@ -45,6 +51,7 @@ export default function ContextProvider({ children }) {
   else admin = {}
   const [adminUserDetails, setAdminUserDetails] = useState(admin);
   const [rangeSliderReset, setRangeSliderReset] = useState(uid());
+  let axios = HTTP(token) 
   return (
     <Context.Provider
       value={{
@@ -74,7 +81,9 @@ export default function ContextProvider({ children }) {
         paginativeData, setPaginativeData,
         unselect, setUnselect,
         adminUserDetails, setAdminUserDetails,
-        rangeSliderReset, setRangeSliderReset
+        rangeSliderReset, setRangeSliderReset,
+        token, setToken,
+        axios
       }}>
       {children}
     </Context.Provider>

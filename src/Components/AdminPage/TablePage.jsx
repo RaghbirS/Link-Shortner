@@ -1,5 +1,5 @@
 import { Box, Button, Modal, ModalContent, ModalOverlay, Select, Text } from "@chakra-ui/react";
-import axios from "axios";
+// import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { Context } from "../../context";
@@ -14,7 +14,7 @@ import SkeletonLoading from "./SkeletonLoading";
 import AddNewData from "../AddNewData/AddNewData";
 
 export default function AdminTablePage() {
-    const { loading, data, setData, userDetails, selected, setSelected, filteredData, setFilteredData, editing, setEditing, toast
+    const { axios,loading, data, setData, userDetails, selected, setSelected, filteredData, setFilteredData, editing, setEditing, toast
         , domainValue, setDomainValue, clickDetails,
         shortLimit, apiLink, dataLimit, setDataLimit,
         page, setPage, adminUserDetails, setPaginativeData, setLoading

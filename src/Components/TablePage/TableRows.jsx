@@ -8,7 +8,7 @@ import {
     ModalOverlay,
     ModalContent
 } from '@chakra-ui/react';
-import axios from "axios";
+// import axios from "axios";
 import { NavLink } from "react-router-dom";
 function CustomIconQR({ onClick }) {
     return <svg onClick={onClick} style={{ height: "75%", cursor: "pointer" }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 80C0 53.5 21.5 32 48 32h96c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V80zM64 96v64h64V96H64zM0 336c0-26.5 21.5-48 48-48h96c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V336zm64 16v64h64V352H64zM304 32h96c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H304c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48zm80 64H320v64h64V96zM256 304c0-8.8 7.2-16 16-16h64c8.8 0 16 7.2 16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s7.2-16 16-16s16 7.2 16 16v96c0 8.8-7.2 16-16 16H368c-8.8 0-16-7.2-16-16s-7.2-16-16-16s-16 7.2-16 16v64c0 8.8-7.2 16-16 16H272c-8.8 0-16-7.2-16-16V304zM368 480a16 16 0 1 1 0-32 16 16 0 1 1 0 32zm64 0a16 16 0 1 1 0-32 16 16 0 1 1 0 32z" /></svg>
@@ -28,7 +28,7 @@ function CustomIconStar({ onClick, bg }) {
 
 export default function TableRows({ data, userDataArr, setData, toast, date
 }) {
-    const { googleSheetDeployLink, setGoogleSheetDeployLink, selected, setSelected, editing, domainValue, userDetails, setFilteredData, clickDetails, setclickDetails
+    const { axios, googleSheetDeployLink, setGoogleSheetDeployLink, selected, setSelected, editing, domainValue, userDetails, setFilteredData, clickDetails, setclickDetails
         , setMapData, apiLink, setUnselect, setPaginativeData
     } = useContext(Context);
     const [check, setCheck] = useState(false);
@@ -43,6 +43,10 @@ export default function TableRows({ data, userDataArr, setData, toast, date
     const [openClicks, setopenClicks] = useState(false);
     const [isGoogleSheetEditable, setIsGoogleSheetEditable] = useState(false);
     const deployLinkRef = useRef(null);
+    const filteredClicks = clickDetails.filter(j => {
+        return shortLinkValue.includes(j.shortURL)
+        // return j.shortURL == shortLinkValue
+    })
     useEffect(() => {
         if (count == 1) {
             return setCount(prev => prev + 1)
@@ -106,7 +110,7 @@ export default function TableRows({ data, userDataArr, setData, toast, date
 
                 </Button>
             </Box>
-            <Input flexShrink={0} w={"13%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={true} borderRadius={"none"} h={"40px"} defaultValue={date} onChange={()=>{}} border={"2px solid #dee2e6"}></Input>
+            <Input flexShrink={0} w={"13%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={true} borderRadius={"none"} h={"40px"} defaultValue={date} onChange={() => { }} border={"2px solid #dee2e6"}></Input>
             <Input color={!isReadOnly ? "white" : "black"} background={!isReadOnly ? "#888888" : "none"} flexShrink={0} w={"18%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={isReadOnly} onChange={(e) => setLongURLValue(e.target.value)} borderRadius={"none"} h={"40px"} value={longURLValue} border={"2px solid #dee2e6"}></Input>
             <Input color={!isReadOnly ? "white" : "black"} background={!isReadOnly ? "#888888" : "none"} flexShrink={0} w={"10%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={isReadOnly} onChange={(e) => {
                 setAliasValue(e.target.value)
@@ -132,7 +136,7 @@ export default function TableRows({ data, userDataArr, setData, toast, date
                 </Box>
             </Box>
             <Input color={!isReadOnly ? "white" : "black"} background={!isReadOnly ? "#888888" : "none"} flexShrink={0} w={"10%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={isReadOnly} onChange={(e) => setRemarksValue(e.target.value)} borderRadius={"none"} h={"40px"} value={remarksValue} border={"2px solid #dee2e6"}></Input>
-            <Box onClick={() => setopenClicks(true)} flexShrink={0} w={"8%"} cursor={"pointer"} borderRadius={"none"} h={"40px"} border={"2px solid #dee2e6"} display={"flex"} justifyContent={"center"} alignItems={"center"} ><p style={{ textDecoration: "underline", color: "blue" }}>{clickDetails.filter(i => i.shortURL == shortLinkValue).length}</p></Box>
+            <Box onClick={() => setopenClicks(true)} flexShrink={0} w={"8%"} cursor={"pointer"} borderRadius={"none"} h={"40px"} border={"2px solid #dee2e6"} display={"flex"} justifyContent={"center"} alignItems={"center"} ><p style={{ textDecoration: "underline", color: "blue" }}>{filteredClicks.length}</p></Box>
             <Box flexShrink={0} w={"15%"} cursor={"default"} onChange={(e) => (e.target.value)} borderRadius={"none"} h={"40px"} border={"2px solid #dee2e6"} display={"flex"} justifyContent={"center"} alignItems={"center"} gap={"20px"}>
                 <CustomIconQR onClick={() => setOpenQR(true)} />
                 <CustomIconEmail onClick={() => {
@@ -187,14 +191,14 @@ export default function TableRows({ data, userDataArr, setData, toast, date
                             <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} letterSpacing={"3px"}>OS</Box>
                         </Box>
                         {
-                            clickDetails.filter(j => j.shortURL == shortLinkValue).map((i) => (
+                            filteredClicks.map((i) => (
                                 <Box key={i._id} h={"50px"} display={"flex"} >
-                                    <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} >{i.city}</Box>
-                                    <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} flex={1} >{i.country}</Box>
-                                    <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} flex={1} >{i.latitude}</Box>
-                                    <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} flex={1} >{i.longitude}</Box>
-                                    <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} >{i.browser}</Box>
-                                    <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} >{i.os}</Box>
+                                    <Box padding={"10px"} cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} >{i.city}</Box>
+                                    <Box padding={"10px"} cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} flex={1} >{i.country}</Box>
+                                    <Box padding={"10px"} cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} flex={1} >{i.latitude}</Box>
+                                    <Box padding={"10px"} cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} flex={1} >{i.longitude}</Box>
+                                    <Box padding={"10px"} cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} >{i.browser}</Box>
+                                    <Box padding={"10px"} cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} >{i.os}</Box>
                                 </Box>
                             ))
                         }

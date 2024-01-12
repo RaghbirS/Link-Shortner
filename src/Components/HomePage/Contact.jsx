@@ -2,11 +2,11 @@ import { Box, Button, Text } from '@chakra-ui/react'
 import React, { useContext, useState } from 'react'
 import s from "./HomePage.module.css"
 import { Context } from '../../context';
-import axios from 'axios';
+// import axios from 'axios';
 
 const Contact = () => {
     let [senderDetails, setSenderDetails] = useState({ name: '', email: '', message: '' });
-    const { toast, apiLink } = useContext(Context);
+    const {axios, toast, apiLink } = useContext(Context);
     function isValidEmail() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(senderDetails.email);
@@ -35,7 +35,7 @@ const Contact = () => {
         setSenderDetails({ name: '', email: '', message: '' });
     }
     return (
-        <Box id='contact' minH={"140vh"} bg={"url(https://cbxit.in/assets/images/contact-bg.jpg)"} bgSize={'cover'}>
+        <Box background={"black"} id='contact' minH={"140vh"} bg={"url(https://cbxit.in/assets/images/contact-bg.jpg)"} bgSize={'cover'}>
             <Box minH={"30vh"} display={"flex"} flexDir={"column"} alignItems={"center"}>
                 <Box h={"160px"} w={"2px"} bg={"rgba(250,250,250,0.1)"}></Box>
                 <Box width={["90%", "320px", "320px", "320px"]} h={"100px"} border={"3px solid rgba(250,250,250,0.1)"} display={"flex"} justifyContent={"center"} alignItems={"center"}>

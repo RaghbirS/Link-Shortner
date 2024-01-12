@@ -6,7 +6,7 @@ import Footer from './Footer'
 const HomePage = () => {
     return (
         <>
-            <Box bg={"rgba(22,34,57,0.85)"} minH={"calc(100vh - 100px)"} flexDir={"column"} display={"flex"} alignItems={"center"}>
+            <Box  bg={"rgba(22,34,57,0.85)"} minH={"calc(100vh - 100px)"} flexDir={"column"} display={"flex"} alignItems={"center"}>
                 <Box minH={"calc(70vh - 170px)"} display={"flex"} flexDir={"column"} alignItems={"center"} justifyContent={"center"}>
                     <Text fontSize={["20px", "24px", "28px", "30px"]} color={"white"}>CBXIT FOR SHORT URL</Text>
                     <Box display={"flex"}>
@@ -26,8 +26,10 @@ const HomePage = () => {
                     </Box>
                 </Box>
             </Box>
+            <Box bg={"#232c3f"}>
             <Contact />
             <Footer />
+            </Box>
         </>
     )
 }

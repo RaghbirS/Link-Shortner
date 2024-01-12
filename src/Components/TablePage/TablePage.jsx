@@ -1,5 +1,5 @@
 import { Box, Button, Modal, ModalContent, ModalOverlay, Select, Text } from "@chakra-ui/react";
-import axios from "axios";
+// import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { Navigate, NavLink } from "react-router-dom";
 import { Context } from "../../context";
@@ -17,7 +17,7 @@ export default function TablePage() {
     const { loading, data, setData, userDetails, selected, setSelected, filteredData, setFilteredData, editing, setEditing, toast
         , domainValue, setDomainValue, clickDetails,
         shortLimit, apiLink, dataLimit, setDataLimit,
-        page, setPage, paginativeData, setPaginativeData
+        page, setPage, axios, setPaginativeData
     } = useContext(Context);
     const [isEditable, setIsEditable] = useState(false);
     const [domain, setDomain] = useState(domainValue);
@@ -93,7 +93,17 @@ export default function TablePage() {
                     <Box display={"flex"} alignItems={"center"} h={"50%"} p={"30px 0"} width={"100%"} justifyContent={"space-between"}>
                         <Box display={"flex"} gap={"20px"}>
                             {/* <B to={"/client/addNewData"}> */}
-                            <Button onClick={() => setIsModalOpen(true)} _hover={{ background: "#6262ff" }} color={"white"} background={"#7f7fff"} cursor={"pointer"} display={"flex"} gap={"10px"} alignItems="center" fontWeight={"500"}>
+                            <Button onClick={() => {
+                                if (shortLimit === 0) {
+                                    return toast({
+                                        title: `Please wait or reload the app.`,
+                                        status: "error",
+                                        isClosable: true,
+                                        position: "top"
+                                    })
+                                }
+                                setIsModalOpen(true)
+                            }} _hover={{ background: "#6262ff" }} color={"white"} background={"#7f7fff"} cursor={"pointer"} display={"flex"} gap={"10px"} alignItems="center" fontWeight={"500"}>
                                 <svg style={{ width: "15px", fill: "white" }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M240 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H176V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H240V80z" /></svg>
                                 <Text>Add New URL</Text>
                             </Button>
