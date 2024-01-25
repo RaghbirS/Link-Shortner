@@ -41,7 +41,7 @@ export default function ContextProvider({ children }) {
   const [allUsersFilteredData, setAllUsersFilteredData] = useState([])
   const [googleSheetDeployLink, setGoogleSheetDeployLink] = useState("")
   const toast = useToast()
-  const [dataLimit, setDataLimit] = useState(40);
+  const [dataLimit, setDataLimit] = useState(50);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [paginativeData, setPaginativeData] = useState([])

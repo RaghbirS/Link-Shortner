@@ -7,8 +7,8 @@ function SimpleMap() {
   console.log(mapData)
   const defaultProps = {
     center: {
-      lat: mapData[0].latitude=="Unknown"?19.0760:mapData[0].latitude,
-      lng: mapData[0].longitude=="Unknown"?72.877426:mapData[0].longitude
+      lat: mapData[0]?.latitude=="Unknown"?19.0760:mapData[0]?.latitude,
+      lng: mapData[0]?.longitude=="Unknown"?72.877426:mapData[0]?.longitude
     },
     zoom: 11
   };
@@ -28,8 +28,8 @@ function SimpleMap() {
       const mapOptions = {
           zoom: 7,
           center: {
-            lat: Number(mapData[0].latitude),
-            lng: Number(mapData[0].longitude)
+            lat: Number(mapData[0]?.latitude || 0),
+            lng: Number(mapData[0]?.longitude || 0)
         },
       };
   
