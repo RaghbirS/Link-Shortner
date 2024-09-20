@@ -12,15 +12,16 @@ function isUnderDate(values, checkDate) {
     return false
 }
 
-export default function Filters() {
-    const { setFilteredData, page, dataLimit } = useContext(Context);
+export default function Filters({paginativeData, setPaginativeData, setFilteredData}) {
+    const {  page, dataLimit } = useContext(Context);
+    console.log(dataLimit)
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName] = useState("")
     const [email, setEmail] = useState("")
     const [domain, setDomain] = useState("");
-    const { userDetails, paginativeData, setPaginativeData, toast } = useContext(Context);
+    const { userDetails, isAdminLogin } = useContext(Context);
     useEffect(() => {
-        if (userDetails._id) return;
+        if (!isAdminLogin) return;
         let temp = [];
         for (let i of paginativeData) {
             if ((i.firstName || "").includes(firstName) && (i.lastName || "").includes(lastName) && (i.email || "").includes(email) && (i.domain || "").includes(domain)) {

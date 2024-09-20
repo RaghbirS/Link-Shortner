@@ -1,5 +1,5 @@
 import { Box, Button, Input, Text } from "@chakra-ui/react";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Context } from "../../context";
 import { CopyIcon } from "@chakra-ui/icons";
 
@@ -40,10 +40,18 @@ const link1 = "localhost:3001/fbbb";
 const link2 = "https://cbxit.in/10am";
 const result = areLinksEqual(link1, link2);
 
-if (result) {
-    console.log("The links are the same.");
-} else {
-    console.log("The links are different.");
+function ensureHttps(link) {
+    // Check if the link starts with "http://" or "https://"
+    if (link.startsWith('http://')) {
+        // Replace "http://" with "https://"
+        return link.replace('http://', 'https://');
+    } else if (!link.startsWith('https://')) {
+        // If it doesn't start with "https://" or "http://", prepend "https://"
+        return 'https://' + link;
+    }
+
+    // If the link already has "https://" or "http://", return it unchanged
+    return link;
 }
 
 
@@ -64,10 +72,24 @@ export default function TableRows({ data, userDataArr, setData, toast, date
     const [openClicks, setopenClicks] = useState(false);
     const [isGoogleSheetEditable, setIsGoogleSheetEditable] = useState(false);
     const deployLinkRef = useRef(null);
+
+
     const filteredClicks = clickDetails.filter(j => {
-        return shortLinkValue.includes(j.shortURL)
+        let val1 = ensureHttps(shortLinkValue);
+        let val2 = ensureHttps(j.shortURL);
+        return areLinksEqual(val1, val2)
+        // return shortLinkValue.includes(j.shortURL)
         // return j.shortURL == shortLinkValue
     })
+    const allCount = useMemo(() => {
+        return (() => {
+            let temp = 0;
+            for (let item of filteredClicks) {
+                temp += +item.count
+            }
+            return temp
+        })()
+    }, [filteredClicks])
     useEffect(() => {
         if (count == 1) {
             return setCount(prev => prev + 1)
@@ -157,7 +179,7 @@ export default function TableRows({ data, userDataArr, setData, toast, date
                 </Box>
             </Box>
             <Input color={!isReadOnly ? "white" : "black"} background={!isReadOnly ? "#888888" : "none"} flexShrink={0} w={"10%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={isReadOnly} onChange={(e) => setRemarksValue(e.target.value)} borderRadius={"none"} h={"40px"} value={remarksValue} border={"2px solid #dee2e6"}></Input>
-            <Box onClick={() => setopenClicks(true)} flexShrink={0} w={"8%"} cursor={"pointer"} borderRadius={"none"} h={"40px"} border={"2px solid #dee2e6"} display={"flex"} justifyContent={"center"} alignItems={"center"} ><p style={{ textDecoration: "underline", color: "blue" }}>{filteredClicks.length}</p></Box>
+            <Box onClick={() => setopenClicks(true)} flexShrink={0} w={"8%"} cursor={"pointer"} borderRadius={"none"} h={"40px"} border={"2px solid #dee2e6"} display={"flex"} justifyContent={"center"} alignItems={"center"} ><p style={{ textDecoration: "underline", color: "blue" }}>{data.clicks || allCount}</p></Box>
             <Box flexShrink={0} w={"15%"} cursor={"default"} onChange={(e) => (e.target.value)} borderRadius={"none"} h={"40px"} border={"2px solid #dee2e6"} display={"flex"} justifyContent={"center"} alignItems={"center"} gap={"20px"}>
                 <CustomIconQR onClick={() => setOpenQR(true)} />
                 <CustomIconEmail onClick={() => {
@@ -187,14 +209,12 @@ export default function TableRows({ data, userDataArr, setData, toast, date
                         <Box h={"50px"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} p={"40px"}>
                             <NavLink to={"/client/map"}><Button onClick={() => {
                                 let temp = clickDetails.filter(i => {
-                                    console.log(i.shortURL, shortLinkValue)
                                     return areLinksEqual(i.shortURL, shortLinkValue)
                                     // return i.shortURL == shortLinkValue
                                 })
                                 setMapData(temp)
-                                console.log(temp)
                             }}>Map</Button></NavLink>
-                            <Box display={"flex"} gap={"10px"} alignItems={"center"}>
+                            {/* <Box display={"flex"} gap={"10px"} alignItems={"center"}>
                                 <Text>Google Sheets</Text>
                                 <Input readOnly={!isGoogleSheetEditable} ref={deployLinkRef} w={"200px"} defaultValue={googleSheetDeployLink} />
                                 <Button display={!isGoogleSheetEditable ? "flex" : "none"} onClick={() => { setIsGoogleSheetEditable(true) }}>Edit</Button>
@@ -205,25 +225,27 @@ export default function TableRows({ data, userDataArr, setData, toast, date
                                     }).then(r => console.log(r))
                                     setGoogleSheetDeployLink(deployLinkRef.current.value)
                                 }}>Save</Button>
-                            </Box>
+                            </Box> */}
                         </Box>
                         <Box h={"50px"} display={"flex"} background={"#edf2fa"}>
-                            <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} letterSpacing={"3px"}>CITY</Box>
+                            <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"13%"} letterSpacing={"3px"}>CITY</Box>
                             <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} flex={1} letterSpacing={"3px"}>COUNTRY</Box>
                             <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} flex={1} letterSpacing={"3px"}>LATITUDE</Box>
                             <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} flex={1} letterSpacing={"3px"}>LONGITUDE</Box>
                             <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} letterSpacing={"3px"}>BROWSER</Box>
-                            <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} letterSpacing={"3px"}>OS</Box>
+                            <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"15%"} letterSpacing={"3px"}>OS</Box>
+                            <Box cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"10%"} letterSpacing={"3px"}>COUNT</Box>
                         </Box>
                         {
                             filteredClicks.map((i) => (
                                 <Box key={i._id} h={"50px"} display={"flex"} >
-                                    <Box padding={"10px"} cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} >{i.city}</Box>
+                                    <Box padding={"10px"} cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"13%"} >{i.city}</Box>
                                     <Box padding={"10px"} cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} flex={1} >{i.country}</Box>
                                     <Box padding={"10px"} cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} flex={1} >{i.latitude}</Box>
                                     <Box padding={"10px"} cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} flex={1} >{i.longitude}</Box>
                                     <Box padding={"10px"} cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} >{i.browser}</Box>
-                                    <Box padding={"10px"} cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"20%"} >{i.os}</Box>
+                                    <Box padding={"10px"} cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"15%"} >{i.os}</Box>
+                                    <Box padding={"10px"} cursor={"default"} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} border={"2px solid #dee2e6"} w={"10%"}>{i.count}</Box>
                                 </Box>
                             ))
                         }

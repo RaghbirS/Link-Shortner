@@ -46,6 +46,9 @@ export default function ContextProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [paginativeData, setPaginativeData] = useState([])
   const [unselect, setUnselect] = useState([]);
+
+  const [allLinkRows, setAllLinkRows] = useState([])
+
   let admin = Cookies.get('admin');
   if (admin) admin = JSON.parse(admin)
   else admin = {}
@@ -83,7 +86,8 @@ export default function ContextProvider({ children }) {
         adminUserDetails, setAdminUserDetails,
         rangeSliderReset, setRangeSliderReset,
         token, setToken,
-        axios
+        axios,
+        allLinkRows, setAllLinkRows
       }}>
       {children}
     </Context.Provider>

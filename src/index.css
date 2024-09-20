@@ -13,3 +13,28 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.MuiDataGrid-panel {
+  top: -140px !important;
+}
+
+.MuiDataGrid-row:nth-child(even) {
+  background-color: rgb(245, 245, 245);
+}
+
+.MuiDataGrid-row:hover {
+  background-color: rgb(225, 225, 225) !important;
+  transition: .3s;
+}
+
+.MuiDataGrid-columnHeaders {
+  background-color: rgb(0, 100, 0) !important;
+}
+
+.muiGridHeader {
+  color: rgb(255, 255, 255) !important;
+  font-weight: bold !important;
+}
+
+.muiGridHeader svg {
+  color: rgb(255, 255, 255) !important;
+}

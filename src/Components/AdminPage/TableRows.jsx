@@ -42,10 +42,10 @@ const style = {
 };
 
 
-export default function TableRows({ data, userDataArr, toast
+export default function TableRows({ data, userDataArr, toast, setData
 }) {
-    const { selected, setSelected, editing, setAllUsersData,
-        axios, setAllUsersFilteredData, apiLink,setData
+    const { selected, setSelected, editing,
+        axios, apiLink
     } = useContext(Context);
     const [check, setCheck] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(true);
@@ -78,7 +78,6 @@ export default function TableRows({ data, userDataArr, toast
         for (let i = 0; i < temp.length; i++) {
             if (temp[i]._id === _id) {
                 temp[i] = editedObject;
-                console.log(temp[i])
                 break
             }
         }
@@ -86,13 +85,14 @@ export default function TableRows({ data, userDataArr, toast
     }, [firstNameValue, lastNameValue, emailValue, passwordValue, domainValue, isAdminValue])
 
     useEffect(() => {
-        axios.get(`${apiLink}shorten/licenceCheck/`, {
+        axios.post(`${apiLink}shorten/licenceCheck/`, {
             email
         }).then(res => setTotalCredits(res.data.limit))
-        axios.get(`${apiLink}shorten/AllData/`, {
-            email
-        }).then(res => setUsedCredits((res.data.filter(i => i.userID == _id).length)))
+        axios.get(`${apiLink}shorten/AllData?userID=${_id}`).then(res => {
+            setUsedCredits(res.data.length)
+        })
     }, [])
+
     return (
         <Box display={"flex"} minW={"100%"} background={"none"}>
             <Box flexShrink={0} overflow={"hidden"} borderRadius={"none"} h={"40px"} type={"checkbox"} w={"6%"} border={"1px solid #dee2e6"} textAlign={"center"} >
@@ -128,8 +128,9 @@ export default function TableRows({ data, userDataArr, toast
 
             <Input color={!isReadOnly ? "white" : "black"} background={!isReadOnly ? "#888888" : "none"} flexShrink={0} w={"10%"} _focus={{ border: "2px solid black" }} cursor={"default"} readOnly={isReadOnly} onChange={(e) => setPasswordValue(e.target.value)} borderRadius={"none"} h={"40px"} value={domainValue} border={"2px solid #dee2e6"}></Input>
             <Button disabled={!isReadOnly} color={!isReadOnly ? "white" : "black"} background={!isReadOnly ? "#888888" : "none"} flexShrink={0} w={"8%"} cursor={"pointer"} borderRadius={"none"} h={"40px"} border={"2px solid #dee2e6"} display={"flex"} justifyContent={"center"} alignItems={"center"} onClick={(e) => {
-                if(isReadOnly) return;
-                setIsAdminValue(prev=>!prev)}}><input value={isAdminValue}  type="checkbox" checked={isAdminValue} /></Button>
+                if (isReadOnly) return;
+                setIsAdminValue(prev => !prev)
+            }}><input value={isAdminValue} type="checkbox" checked={isAdminValue} /></Button>
             <Box flexShrink={0} w={"11%"} cursor={"default"} onChange={(e) => (e.target.value)} borderRadius={"none"} h={"40px"} border={"2px solid #dee2e6"} display={"flex"} justifyContent={"center"} alignItems={"center"} gap={"20px"}>
                 {totalCredits}
             </Box>

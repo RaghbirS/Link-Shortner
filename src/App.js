@@ -1,6 +1,6 @@
 // import axios from "./HTTP";
 import { useContext, useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, useNavigate } from "react-router-dom"
 import AddNewData from "./Components/AddNewData/AddNewData";
 import LoginPage from "./Components/LoginPage/LoginPage";
 import NavBar from "./Components/Nav/Nav";
@@ -13,21 +13,21 @@ import ForgotPassword from "./Components/forgotPassword/forgotPassword";
 import AdminLogin from "./Components/AdminLogin/AdminLogin";
 import HomePage from "./Components/HomePage/HomePage";
 import AdminTablePage from "./Components/AdminPage/TablePage";
-import { Progress } from "@chakra-ui/react";
+import { Button, ChakraProvider, Progress } from "@chakra-ui/react";
+import Reports from "./Components/Reports/Reports";
 function App() {
-  const { shortLimit, token, axios, loading, adminUserDetails, setPaginativeData, setLoading, socket, data, setData, userDetails, setFilteredData, toast, newDataAdded, filteredData, setShortLimit, setclickDetails, setGoogleSheetDeployLink, apiLink } = useContext(Context);
+  const { isAdminLogin, setisAdminLogin, token, axios, loading, adminUserDetails, setPaginativeData, setLoading, socket, data, setData, userDetails, setFilteredData, toast, newDataAdded, filteredData, setShortLimit, setclickDetails, setGoogleSheetDeployLink, apiLink } = useContext(Context);
   const [count, setCount] = useState(1);
-
+  const navigate = useNavigate()
   useEffect(() => {
     if (!userDetails._id) return;
     if (!token) return;
     try {
       (async () => {
         let { data: res } = await axios.get(apiLink + "shorten/users/" + userDetails._id);
-        console.log(res)
+        setisAdminLogin(res.isAdmin)
         if (res.createLimit != undefined) {
           let prevCreateLimitDate = new Date(res.createLimitDate);
-          console.log(prevCreateLimitDate)
           prevCreateLimitDate.setDate(prevCreateLimitDate.getDate() + 1);
 
           const today = new Date();
@@ -36,7 +36,6 @@ function App() {
               email: userDetails.email
             });
             response = response.data;
-            console.log(response)
             setShortLimit(response.limit)
             let temp = await axios.patch(apiLink + "shorten/users/" + userDetails._id, {
               createLimit: response.limit,
@@ -67,8 +66,11 @@ function App() {
         setPaginativeData(sortedTempData)
         setLoading(false)
       })
-      axios.get(`${apiLink}shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
+      // axios.get(`${apiLink}shorten/clicks?userID=${userDetails._id}`).then(({ data }) => {
 
+      //   setclickDetails(data)
+      // })
+      axios.get(`${apiLink}shorten/clicksWithCount?userID=${userDetails._id}`).then(({ data }) => {
         setclickDetails(data)
       })
     } catch (error) {
@@ -174,18 +176,26 @@ function App() {
   return (
     <div className="App">
       {loading && <Progress zIndex={9999} colorScheme={"orange"} height='5px' isIndeterminate />}
-
-      <NavBar />
+      <ChakraProvider>
+        <NavBar />
+      </ChakraProvider>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/client/links" element={<TablePage />} />
-        <Route path="/client/map" element={<Map />} />
-        <Route path="/client/addNewData" element={<AddNewData />} />
-        <Route path="/client/login" element={<LoginPage />} />
-        <Route path="/client/adminLogin" element={<AdminLogin />} />
-        <Route path="/client/adminPage" element={<AdminTablePage />} />
-        <Route path="/client/forgotPassword" element={<ForgotPassword />} />
-        <Route path="/client/register" element={<RegisterPage />} />
+
+        <Route path="/" element={<ChakraProvider><HomePage /></ChakraProvider>} />
+        <Route path="/client/links" element={<ChakraProvider><TablePage /></ChakraProvider>} />
+        <Route path="/client/map" element={<ChakraProvider>
+          <div style={{ height: '50px', width: '100%', padding: "5px 20px", }}>
+            <Button  onClick={()=>navigate("/client/links")} ><svg style={{ width: "20px" }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" /></svg></Button>
+          </div>
+          <Map />
+        </ChakraProvider>} />
+        <Route path="/client/addNewData" element={<ChakraProvider><AddNewData /></ChakraProvider>} />
+        <Route path="/client/login" element={<ChakraProvider><LoginPage /></ChakraProvider>} />
+        {/* <Route path="/client/adminLogin" element={<AdminLogin />} /> */}
+        {isAdminLogin && <Route path="/client/adminPage" element={<ChakraProvider><AdminTablePage /></ChakraProvider>} />}
+        <Route path="/client/forgotPassword" element={<ChakraProvider><ForgotPassword /></ChakraProvider>} />
+        <Route path="/client/register" element={<ChakraProvider><RegisterPage /></ChakraProvider>} />
+        <Route path="/client/reports" element={<Reports />} />
 
       </Routes>
     </div>

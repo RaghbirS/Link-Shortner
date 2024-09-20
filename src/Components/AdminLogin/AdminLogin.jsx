@@ -14,29 +14,31 @@ import { Navigate } from 'react-router-dom';
 import { Context } from '../../context';
 import Cookies from 'js-cookie';
 export default function AdminLogin() {
-  const { adminUserDetails, setAdminUserDetails, apiLink, toast, setisAdminLogin } = useContext(Context);
+  const { adminUserDetails, setAdminUserDetails, apiLink, toast, setisAdminLogin, setToken } = useContext(Context);
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   async function login() {
-    let { data } = await axios.get(`${apiLink}shorten/users`)
-    for (let i of data) {
-      if (i.email === email && i.password === password) {
-        if (i.isAdmin) {
-          Cookies.set('admin', JSON.stringify({ _id: i._id }));
-          Cookies.set('user', JSON.stringify({}));
-          setAdminUserDetails(i)
-          setisAdminLogin(true)
-          return
-        }
-      }
-    }
-    toast({
-      title: `User does not exist`,
+    let { data: res } = await axios.post(`${apiLink}api/signin`, {
+      email, password, admin: true
+    });
+    if (res.error) return toast({
+      title: res.error,
       status: "error",
       isClosable: true,
       position: "top",
     })
+    setToken(res.token)
+    Cookies.set('token', JSON.stringify(res.token));
+    let userDatails = {
+      email,
+      _id: res.body._id
+    }
+    setAdminUserDetails(res.body)
+    setisAdminLogin(true)
+    Cookies.set('user', JSON.stringify(userDatails));
+    Cookies.set('admin', JSON.stringify({}));
   }
+
   function isValidEmail() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);

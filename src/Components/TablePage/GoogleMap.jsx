@@ -2,9 +2,9 @@ import GoogleMapReact from 'google-map-react';
 import p from "./pointer.png"
 import { useContext, useEffect } from 'react';
 import { Context } from '../../context';
+import { Box, Button } from '@chakra-ui/react';
 function SimpleMap() {
   const {mapData, setMapData} = useContext(Context);
-  console.log(mapData)
   const defaultProps = {
     center: {
       lat: mapData[0]?.latitude=="Unknown"?19.0760:mapData[0]?.latitude,
@@ -47,12 +47,13 @@ function SimpleMap() {
                   map: map,
                   icon: {
                       url: p, // Provide the correct path to your pointer.png
-                      scaledSize: new window.google.maps.Size(50, 50)
-                  }
+                      scaledSize: new window.google.maps.Size(20, 30)
+                  },
+                  
               });
   
               const infowindow = new window.google.maps.InfoWindow({
-                  content: "<p>Marker Location: " + marker.getPosition() + "</p>",
+                  content: "<p> Count: " + data.count +" </p>",
               });
   
               marker.addListener("click", () => {
@@ -67,8 +68,8 @@ function SimpleMap() {
 
   },[])
   return (
-    <div id='map' style={{ height: '100vh', width: '100%' }}>
-
+    <div id='map' style={{ height: '100vh', width: '100%', display:"flex", flexDirection:"column" }}>
+      
       <GoogleMapReact
         bootstrapURLKeys={{ key: "AIzaSyBiLWEqbEv65Bjtyy9BZ2C09aMratx6Juc" }}
         defaultCenter={defaultProps.center}

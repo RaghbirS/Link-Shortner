@@ -16,7 +16,7 @@ import Cookies from 'js-cookie';
 
 
 export default function LoginPage() {
-  const {axios, userDetails, setUserDetails, toast, setDomainValue, apiLink, token, setToken } = useContext(Context);
+  const { axios, userDetails, setUserDetails, toast, setDomainValue, apiLink, token, setToken } = useContext(Context);
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showError, setShowError] = useState(false)
@@ -43,36 +43,6 @@ export default function LoginPage() {
     setUserDetails(res.body)
     Cookies.set('user', JSON.stringify(userDatails));
     Cookies.set('admin', JSON.stringify({}));
-
-
-
-    // let data = await axios.get(`${apiLink}shorten/users`);
-    // data = data.data;
-    // for (let i of data) {
-    //   if (i.email === email) {
-    //     if (i.password != password) return toast({
-    //       title: `Incorrect Password`,
-    //       status: "error",
-    //       isClosable: true,
-    //       position: "top",
-    //     })
-    //     let userDatails = {
-    //       email,
-    //       _id: i._id
-    //     }
-    //     setDomainValue(i.domain)
-    //     setUserDetails(userDatails)
-    //     Cookies.set('user', JSON.stringify(userDatails));
-    //     Cookies.set('admin', JSON.stringify({}));
-    //     return
-    //   }
-    // }
-    // toast({
-    //   title: `User does not exist`,
-    //   status: "error",
-    //   isClosable: true,
-    //   position: "top",
-    // })
   }
   function isValidEmail() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -14,14 +14,13 @@ import SkeletonLoading from "./SkeletonLoading";
 import AddNewData from "../AddNewData/AddNewData";
 
 export default function AdminTablePage() {
-    const { axios,loading, data, setData, userDetails, selected, setSelected, filteredData, setFilteredData, editing, setEditing, toast
-        , domainValue, setDomainValue, clickDetails,
-        shortLimit, apiLink, dataLimit, setDataLimit,
-        page, setPage, adminUserDetails, setPaginativeData, setLoading
+    const { axios,loading, selected, setSelected, editing, setEditing, toast,
+        isAdminLogin, apiLink, dataLimit, setDataLimit,
+        page, setPage, setLoading
     } = useContext(Context);
-    const [isEditable, setIsEditable] = useState(false);
-    const [domain, setDomain] = useState(domainValue);
-
+    const [data, setData] = useState([]);
+    const [paginativeData, setPaginativeData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
     function sortAsc(param) {
         const temp = [...data]
         const sortedData = [...temp].sort((a, b) => {
@@ -79,14 +78,14 @@ export default function AdminTablePage() {
     }
     const [isModalOpen, setIsModalOpen] = useState(false)
     useEffect(() => {
-        axios.get(`${apiLink}shorten/users`).then(res => {
-            console.log(res.data)
+        axios.get(`${apiLink}shorten/users`).then(res => {              
             setData(res.data)
             setPaginativeData(res.data)
+            
             setLoading(false)
         })
-    }, [apiLink, setDomainValue, adminUserDetails._id])
-    if (!adminUserDetails._id) return <Navigate to={"/client/adminLogin"} />
+    }, [apiLink, isAdminLogin])
+    if (!isAdminLogin) return <Navigate to={"/client/links"} />
     return (
         <Box display={"flex"} flexDirection={"column"}>
             <Box w={"100%"} minH={"150px"} display={"flex"} flexDir={"column"} p={"0 30px"}>
@@ -132,7 +131,7 @@ export default function AdminTablePage() {
                                             break
                                         }
                                     }
-
+                                    console.log(temp)
                                     axios.patch(`${apiLink}shorten/users/${i._id}`, temp)
                                     i.setCheck(false)
                                     i.setIsReadOnly(true)
@@ -207,7 +206,7 @@ export default function AdminTablePage() {
                 {/* <Text sx={{ ml: "20px", mb: "10px", textAlign: "center", fontWeight: "bold" }}></Text> */}
                 <ChakraProvider>
                     <Box minH={"50%"} w={"100%"} display={"flex"} justifyContent={"space-between"}>
-                        <Filters />
+                        <Filters paginativeData={paginativeData} setPaginativeData={setPaginativeData} setFilteredData={setFilteredData} />
                     </Box>
                 </ChakraProvider>
             </Box>
@@ -223,8 +222,8 @@ export default function AdminTablePage() {
                         }}>
                             <option value={10}>10</option>
                             <option value={20}>20</option>
-                            <option value={30}>30</option>
-                            <option value={40}>40</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
                         </Select>
                         <Button onClick={() => {
                             if (page > 1) {

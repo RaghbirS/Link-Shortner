@@ -88,8 +88,9 @@ const NavBar = () => {
                     }}>CONTACT</NavLink>
                     <NavLink className={s.navHoverStyle} to={"/client/login"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: (userDetails._id || adminUserDetails._id) || isAdminLogin ? "none" : "flex" }}>LOGIN</NavLink>
                     <NavLink className={s.navHoverStyle} to={"/client/register"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: (userDetails._id || adminUserDetails._id) || isAdminLogin ? "none" : "flex" }}>REGISTER</NavLink>
-                    <NavLink className={s.navHoverStyle} to={"/client/links"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: (userDetails._id) ? "flex" : "none" }}>Links</NavLink>
-                    {adminUserDetails._id && <NavLink className={s.navHoverStyle} to={"client/adminPage"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: (userDetails._id || adminUserDetails._id) ? "flex" : "none" }}>USERS</NavLink>}
+                    {isAdminLogin && <NavLink className={s.navHoverStyle} to={"client/reports"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: (userDetails._id || adminUserDetails._id) ? "flex" : "none" }}>REPORTS</NavLink>}
+                    <NavLink className={s.navHoverStyle} to={"/client/links"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: (userDetails._id) ? "flex" : "none" }}>LINKS</NavLink>
+                    {isAdminLogin && <NavLink className={s.navHoverStyle} to={"client/adminPage"} style={{ color: "white", fontWeight: "bold", fontSize: "20px", display: (userDetails._id || adminUserDetails._id) ? "flex" : "none" }}>USERS</NavLink>}
 
                     <Button display={!userDetails._id ? "none" : "flex"} onClick={() => {
                         setUserDetails({})

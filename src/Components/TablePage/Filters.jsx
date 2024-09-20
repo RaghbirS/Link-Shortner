@@ -29,7 +29,7 @@ export default function Filters() {
         setLoading(true)
         let temp = [];
         for (let i of paginativeData) {
-            if (isUnderDate(sliderValues, new Date(i.dateCreated)) && i.longURL.includes(searchLongURL) && i.alias.includes(searchAlias) && i.shortURL.includes(searchShortURL) && i.remarks.includes(searchRemarks)) {
+            if (isUnderDate(sliderValues, new Date(i.dateCreated)) && (i.longURL.toLowerCase()).includes(searchLongURL) && (i.alias.toLowerCase()).includes(searchAlias) && (i.shortURL.toLowerCase()).includes(searchShortURL) && (i.remarks.toLowerCase()).includes(searchRemarks)) {
                 temp.push(i)
             }
         }
@@ -46,7 +46,7 @@ export default function Filters() {
             <Box width={"100%"} minHeight={"50%"} display={"flex"} columnGap={"5px"} flexWrap={"wrap"} alignItems={"center"}>
 
 
-                <Box w={"300px"} position={"relative"}>
+                {/* <Box w={"300px"} position={"relative"}>
                     <Input style={{ color: "black", fontWeight: "900" }} disabled defaultValue={userDetails._id} readOnly={true} />
                     <Box position={"absolute"} w={"fit-content"} h={"100%"} top={"0"} right={0}>
                         <CopyIcon onClick={async () => {
@@ -59,7 +59,7 @@ export default function Filters() {
                             })
                         }} position={"absolute"} right={"10px"} top={"12px"} cursor={"pointer"} />
                     </Box>
-                </Box>
+                </Box> */}
 
                 <Input style={{ color: "black", fontWeight: "900" }} disabled={true} w={"200px"} value={`${data.length} Links out of ${shortLimit}`} onChange={() => { }} readOnly={true} />
                 <Button sx={{ margin: "0 20px" }} onClick={() => {
@@ -73,19 +73,19 @@ export default function Filters() {
                }}>Reset</Button>
                 <Input value={searchLongURL} onChange={e => {
                     setPage(1)
-                    setSearchLongURL(e.target.value)
+                    setSearchLongURL(e.target.value.toLowerCase())
                 }} w={"250"} placeholder={"Search Long URL"} />
                 <Input value={searchAlias} onChange={e => {
                     setPage(1)
-                    setSearchAlias(e.target.value)
+                    setSearchAlias(e.target.value.toLowerCase())
                 }} w={"250"} placeholder={"Search Alias"} />
                 <Input value={searchShortURL} onChange={e => {
                     setPage(1)
-                    setsearchShortURL(e.target.value)
+                    setsearchShortURL(e.target.value.toLowerCase())
                 }} w={"250"} placeholder={"Search Short URL"} />
                 <Input value={searchRemarks} onChange={e => {
                     setPage(1)
-                    setSearchRemarks(e.target.value)
+                    setSearchRemarks(e.target.value.toLowerCase())
                 }} w={"300"} placeholder={"Search Remarks"} />
                 <DateRangeSlider sliderVal={sliderVal} setSliderVal={setSliderVal} resetKey={rangeSliderReset} sliderValues={sliderValues} setSliderValues={setSliderValues} />
             </Box>
